@@ -22,6 +22,7 @@ import com.t1k.store.vo.CartVO;
 import com.t1k.store.vo.OrderVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -175,7 +176,7 @@ public class OrderServiceImpl implements IOrderService
     {
         userService.JudgeUser(uid, username);
         List<OrderVO> orderVOS = orderVOMapper.getOrderVOs(uid);
-        if(Objects.isNull(orderVOS)) throw new ServiceException("订单数据不存在");
+        if(ObjectUtils.isEmpty(orderVOS)) throw new ServiceException("订单数据不存在");
         return orderVOS;
     }
 
@@ -194,7 +195,7 @@ public class OrderServiceImpl implements IOrderService
                .selectCollection(OrderItem.class, OrderVO::getOrderItems)
                .leftJoin(OrderItem.class, OrderItem::getOid, Order::getOid);
         List<OrderVO> orderVOS = orderMapper.selectJoinList(OrderVO.class, wrapper);
-        if(Objects.isNull(orderVOS)) throw new ServiceException("订单数据不存在");
+        if(ObjectUtils.isEmpty(orderVOS)) throw new ServiceException("订单数据不存在");
         return orderVOS;
     }
 
@@ -203,7 +204,7 @@ public class OrderServiceImpl implements IOrderService
     {
         userService.JudgeUser(uid, username);
         OrderVO orderVO = orderVOMapper.getOrderVO(uid, oid);
-        if(Objects.isNull(orderVO)) throw new ServiceException("订单数据不存在");
+        if(ObjectUtils.isEmpty(orderVO)) throw new ServiceException("订单数据不存在");
         return orderVO;
     }
 
@@ -224,7 +225,7 @@ public class OrderServiceImpl implements IOrderService
     {
         userService.JudgeUser(uid, username);
         Order order = orderMapper.selectOne(new LambdaQueryWrapper<Order>().eq(Order::getUid, uid).eq(Order::getOid, oid));
-        if(Objects.isNull(order)) throw new OrderNotFoundException("没有该订单");
+        if(ObjectUtils.isEmpty(order)) throw new OrderNotFoundException("没有该订单");
         OrderVO orderVO = getOrderVO(uid, username, oid);
         orderVO.setAid(null);
         orderVO.setRecvName(null);

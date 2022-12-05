@@ -1,13 +1,9 @@
 package com.t1k.store.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.github.yulichang.base.MPJBaseMapper;
 import com.t1k.store.entity.Order;
-import com.t1k.store.vo.OrderVO;
-import org.apache.ibatis.annotations.Select;
 
-import java.util.List;
-
+/** 处理订单数据操作的持久层接口 */
 public interface OrderMapper extends MPJBaseMapper<Order>
 {
 //    @Select("select a.oid, a.aid, a.recv_name as recvName, a.total_price as totalPrice, a.status, a.order_time as orderTime, a.pay_time as payTime, " +
@@ -19,5 +15,4 @@ public interface OrderMapper extends MPJBaseMapper<Order>
 //            "where a.uid=#{uid} " +
 //            "order by a.status ASC, a.created_time DESC")
 //    List<OrderVO> getOrderVOs(Integer uid);
-
 }

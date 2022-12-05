@@ -1,6 +1,5 @@
 package com.t1k.store.service;
 
-import com.t1k.store.entity.Order;
 import com.t1k.store.vo.OrderVO;
 
 import java.util.List;
@@ -14,10 +13,19 @@ public interface IOrderService
      * @param username 当前登录的用户名
      * @param aid 收货地址id
      * @param cids 购物车数据id
-     * @return 订单数据信息
+     * @return 订单id
      */
     Integer createOrderByC(Integer uid, String username, Integer aid, List<Integer> cids);
 
+    /**
+     * 创建订单
+     * @param uid 当前登录的用户id
+     * @param username 当前登录的用户名
+     * @param aid 收货地址id
+     * @param pid 商品id
+     * @param num 商品数量
+     * @return 订单id
+     */
     Integer createOrderByP(Integer uid, String username, Integer aid, Integer pid, Integer num);
 
     /**

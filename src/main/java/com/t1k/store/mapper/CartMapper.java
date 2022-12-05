@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
+/** 处理购物车数据操作的持久层接口 */
 public interface CartMapper extends BaseMapper<Cart>
 {
     @Select("select cid, uid, pid, cart.price, cart.num, product.title, product.image, product.price AS realprice " +
@@ -37,5 +38,4 @@ public interface CartMapper extends BaseMapper<Cart>
             "<foreach collection='list' open='(' item='cid' separator=',' close=')'> #{cid} </foreach> " +
             "</script>")
     int selDelCart(Integer uid, @Param("list") List<Integer> cids);
-
 }

@@ -1,11 +1,9 @@
 package com.t1k.store.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.t1k.store.entity.Collect;
 import com.t1k.store.entity.Product;
-import com.t1k.store.mapper.CollectMapper;
 import com.t1k.store.mapper.ProductMapper;
 import com.t1k.store.service.ICollectService;
 import com.t1k.store.service.IProductService;
@@ -16,8 +14,6 @@ import org.springframework.util.ObjectUtils;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 @Service
 public class ProductServiceImpl implements IProductService

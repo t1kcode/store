@@ -50,7 +50,7 @@ public class CartController extends BaseController
         return new JsonResult<>(OK, service.addToCart(uid, username, pid, amount));
     }
 
-    @ApiOperation(value = "加入购物车", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;用于用户将商品加入购物车")
+    @ApiOperation(value = "获取购物车中商品信息", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;用于用户获取购物车中商品信息")
     @ApiResponses({
             @ApiResponse(code = 200, message = "请求成功"),
             @ApiResponse(code = 5001, message = "用户不存在"),
@@ -123,7 +123,7 @@ public class CartController extends BaseController
         return new JsonResult<>(OK);
     }
 
-    @ApiOperation(value = "改变购物车商品数量", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;用于用户改变购物车商品数量")
+    @ApiOperation(value = "根据cids获取购物车中商品信息", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;用于用户根据cids获取购物车中商品信息")
     @ApiResponses({
             @ApiResponse(code = 200, message = "请求成功"),
             @ApiResponse(code = 5001, message = "用户不存在"),
