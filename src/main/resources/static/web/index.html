@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!--edge浏览器H5兼容设置-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!--360浏览器H5兼容设置-->
+		<meta name="renderer" content="webkit" />
+		<title>电脑商城</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--导入核心文件-->
+		<script src="../static/bootstrap3/js/holder.js"></script>
+		<link href="../static/bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+
+		<link rel="stylesheet" type="text/css" href="../static/css/font-awesome1.min.css">
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css">
+
+		<link rel="stylesheet" href="../static/css/layui.css">
+		<script src="../static/js/layui.js"></script>
+		<script src="../static/js/laypage.js"></script>
+
+		<script src="../static/bootstrap3/jquery-1.8.3.min.js"></script>
+		<script src="../static/bootstrap3/js/bootstrap.js"></script>
+		<script src="../static/js/menu.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体图标 -->
+		<link rel="stylesheet" href="../static/bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/webindex.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/footer.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/top.css" />
+		<script src="../static/js/error.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			// 是$(document).ready(function (){})的简写
+			$(function (){
+				$(".header").load("template/head.html")
+				$(".footer").load("template/footer.html")
+				$(".middleBar").load("template/middleBar.html")
+			})
+		</script>
+	</head>
+
+	<body>
+		<!--头部-->
+		<header class="header"></header>
+		<!--头部结束-->
+		<!--导航 -->
+		<div class="middleBar"></div>
+		<!--导航结束-->
+		<div class="container">
+			<div class="row">
+				<div class="col-md-2" id="indexMenu">
+					<ul class="index-menu">
+					</ul>
+					<div id="showIndex">
+						<ul class="second-menu">
+							<li class="second-menu-li">####</li>
+						</ul>
+					</div>
+					<div id="showSecond">
+						<ul class="third-menu">
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-10">
+					<div id="myCarousel" class="carousel slide">
+						<!-- 轮播（Carousel）指标 -->
+						<ol class="carousel-indicators">
+							<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+							<li data-target="#myCarousel" data-slide-to="1"></li>
+							<li data-target="#myCarousel" data-slide-to="2"></li>
+							<li data-target="#myCarousel" data-slide-to="3"></li>
+							<li data-target="#myCarousel" data-slide-to="4"></li>
+						</ol>
+						<!-- 轮播（Carousel）项目 -->
+						<div class="carousel-inner" align="center">
+							<div class="item active">
+								<img src="../static/images/index/index_banner1.png">
+							</div>
+							<div class="item">
+								<img src="../static/images/index/index_banner2.png">
+							</div>
+							<div class="item">
+								<img src="../static/images/index/index_banner3.png">
+							</div>
+							<div class="item">
+								<img src="../static/images/index/index_banner4.png">
+							</div>
+							<div class="item">
+								<img src="../static/images/index/index_banner5.png">
+							</div>
+						</div>
+						<!-- 轮播（Carousel）导航 -->
+						<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+							<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+							<span class="sr-only">Previous</span>
+						</a>
+						<a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+							<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+							<span class="sr-only">Next</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			
+			<!--推荐栏目-->
+			<div class="row">
+				<div class="col-md-6">
+					<div class="panel panel-default">
+						<div class="panel-heading"><p class="panel-title">新到好货</p></div>
+						<div id="new-list" class="panel-body panel-item"></div>
+						<div class="text-center pt-2" id="bar-pages-new"></div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="panel panel-default">
+						<div class="panel-heading"><p class="panel-title">热销排行</p></div>
+						<div id="hot-list" class="panel-body panel-item"></div>
+						<div class="text-center pt-2" id="bar-pages-hot"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--页脚开始-->
+		<div class="footer"></div>
+		<!--页脚结束-->
+		<script type="text/javascript">
+			let page = 1 // 设置首页页码
+			let limit = 6 // 每页的数据条数
+			let total = 48 // 总条数
+
+			$(document).ready(function (){
+				showHotProducts()
+				showNewProducts()
+				hotPaging()
+				newPaging()
+			});
+
+			function showList(json, ct){
+				let list = json.data
+				if(total > list.length){
+					total = list.length
+				}
+				for (let i = 0; i < list.length; i++) {
+					let html = '<div class="col-md-12">' +
+							'<div class="col-md-7 text-row-2"><a href="product.html?id=#{id}">#{title}</a></div>' +
+							'<div class="col-md-2">￥#{price}</div>' +
+							'<div class="col-md-3"><img src="..#{image}collect.png" class="img-responsive" /></div>' +
+							'</div>'
+					html = html.replace(/#{title}/g, list[i].title)
+					html = html.replace(/#{price}/g, list[i].price)
+					html = html.replace(/#{image}/g, list[i].image)
+					html = html.replace(/#{id}/g, list[i].id)
+					ct.append(html)
+				}
+			}
+
+			function showHotProducts(){
+				$.ajax({
+					url: "/product/get_hotProducts",
+					type: "post",
+					data: {
+						"page": page,
+						"limit": limit
+					},
+					dataType: "json",
+					success: function(json){
+						if(json.state === 200){
+							let ct = $("#hot-list")
+							showList(json, ct)
+						} else{
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				});
+			}
+
+			function showNewProducts(){
+				$.ajax({
+					url: "/product/get_newProducts",
+					type: "post",
+					data: {
+						"page": page,
+						"limit": limit
+					},
+					dataType: "json",
+					success: function (json) {
+						if(json.state === 200){
+							let ct = $("#new-list")
+							showList(json, ct)
+						} else{
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			function hotPaging(){
+				layui.use('laypage', function (){
+					let laypage = layui.laypage
+					laypage.render({
+						elem: 'bar-pages-hot',
+						count: total,
+						limit: limit,
+						jump: function (obj, first) {
+							// obj包含了当前分页的所有参数, 比如
+							page = obj.curr // 改变当前页码
+							limit = obj.limit
+							if(!first){
+								$("#hot-list").empty()
+								showHotProducts() // 首次不执行
+							}
+						}
+					})
+				})
+			}
+
+			function newPaging(){
+				layui.use('laypage', function (){
+					let laypage = layui.laypage
+					laypage.render({
+						elem: 'bar-pages-new',
+						count: total,
+						limit: limit,
+						jump: function (obj, first) {
+							// obj包含了当前分页的所有参数, 比如
+							page = obj.curr // 改变当前页码
+							limit = obj.limit
+							if(!first){
+								$("#new-list").empty()
+								showNewProducts() // 首次不执行
+							}
+						}
+					})
+				})
+			}
+		</script>
+	</body>
+
+</html>

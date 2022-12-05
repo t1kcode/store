@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<!--edge浏览器H5兼容设置-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!--360浏览器H5兼容设置-->
+		<meta name="renderer" content="webkit" />
+		<title>电脑商城</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--导入核心文件-->
+		<script src="../static/bootstrap3/js/holder.js"></script>
+		<link href="../static/bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<script src="../static/bootstrap3/jquery-1.9.1.min.js"></script>
+		<script src="../static/bootstrap3/js/bootstrap.js"></script>
+		<!-- 字体图标 -->
+		<link rel="stylesheet" href="../static/bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/top.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/footer.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/order.css" />
+
+		<link rel="stylesheet" href="../static/css/layui.css">
+		<script src="../static/js/layui.js"></script>
+		<script src="../static/js/laypage.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="../static/css/font-awesome1.min.css">
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css">
+		<script src="../static/js/error.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../static/js/TimeTran.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../static/js/jquery-getUrlParam.js" type="text/javascript" charset="UTF-8"></script>
+
+		<script type="text/javascript">
+			$(function (){
+				$(".header").load("template/head.html")
+				$(".footer").load("template/footer.html")
+				$(".middleBar").load("template/middleBar.html")
+				$("#accordion").load("template/container.html")
+			})
+
+			$(function (){
+				let url = "/order/get_orderVOs"
+				let status = $.getUrlParam("status")
+				if(status !== null && status !== ""){
+					if(status === "0" || status === "1"){
+						url = "/order/get_orderVOsByS"
+					} else{
+						let res = [2, 3, 4]
+						status = JSON.stringify(res)
+						url = "/order/get_orderVOsByS"
+					}
+				}
+				showList(url, status)
+			})
+		</script>
+	</head>
+
+	<body>
+		<!--头部-->
+		<header class="header"></header>
+		<!--导航 -->
+		<!--分割导航和顶部-->
+		<div class="middleBar"></div>
+		<!--头部结束-->
+		<!--导航结束-->
+		<div class="container">
+			<div class="col-md-2">
+				<!--左侧导航开始-->
+				<div class="panel-group" id="accordion"></div>
+			</div>
+			<!--左侧导航结束-->
+			<div class="col-md-10" id="orderDetail"></div>
+		</div>
+		<!--页脚开始-->
+		<div class="clearfix"></div>
+		<footer class="footer"></footer>
+		<!--页脚结束-->
+		<script type="text/javascript">
+			function showList(url, status){
+				$("#orderDetail").empty()
+				showOrderVOs(url, status)
+			}
+
+			function setStatus(status){
+				let str = ""
+				switch (status){
+					case 0: str = "未付款"; break
+					case 1: str = "已付款"; break
+					case 2: str = "已取消"; break
+					case 3: str = "已关闭"; break
+					case 4: str = "已完成"; break
+					default: confirm("订单状态错误")
+				}
+				return str
+			}
+
+			function setOption(status){
+				let str = ""
+				if(status === "未付款"){
+					str = "去付款"
+				} else if(status === "已付款"){
+					str = "确定收货"
+				}
+				return str
+			}
+			function delOrder(oid){
+				if(confirm("确定要删除该订单吗？")){
+					$.ajax({
+						url: "/order/del_order",
+						type: "post",
+						data: {
+							"oid": oid
+						},
+						dataType: "json",
+						success: function (json){
+							if(json.state === 200){
+								let url = "/order/get_orderVOs"
+								showList(url)
+							} else{
+								confirm(json.state + ": " + json.message)
+							}
+						},
+						error: function (xhr){
+							error(xhr)
+						}
+					})
+				}
+			}
+			function operation(oid){
+				let opId = "op" + oid.toString()
+				let str = $("#"+opId).html()
+				if(str === "去付款"){
+					sessionStorage.setItem("oid", oid)
+					location.href="payment.html"
+				} else if(str === "确定收货"){
+					if(confirm("确认收到货了吗？")){
+						receipt(oid)
+					}
+				}
+			}
+
+			// 确认收货
+			function receipt(oid){
+				$.ajax({
+					url: "/order/receipt",
+					type: "post",
+					data: {
+						"oid": oid,
+						"status": 4
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							let url =  "/order/get_orderVOs"
+							showList(url)
+						} else{
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			function elementHandle(orderVO, tbId, apId, opId){
+				let oid = orderVO.oid
+				let element =
+						'<div class="panel panel-default">' +
+						'<div class="panel-heading">' +
+						'<p class="panel-title">' +
+						'订单号：<label id="#{oid}" style="color: red">11010003#{oid}</label>' +
+						'，下单时间<label style="color: #4288c3">#{orderTime}</label>' +
+						'，收货人<label style="color: #4288c3">#{name}</label>' +
+						'<a class="pull-right" style="cursor: pointer; padding: 0 15px; color: #72ACE3" onclick="delOrder(#{oid})">删除订单</a>'+
+						'</p>' +
+						'</div>' +
+						'<div class="panel-body">' +
+						'<table class="orders-table" width="100%">' +
+						'<thead>' +
+						'<tr>' +
+						'<th width="15%"></th>' +
+						'<th width="30%">商品</th>' +
+						'<th width="8%">单价</th>' +
+						'<th width="8%">数量</th>' +
+						'<th width="9%">小计</th>' +
+						'<th width="10%">状态</th>' +
+						'</tr>' +
+						'</thead>' +
+						'<tbody class="orders-body" id=#{tbId}>' +
+						'</tbody>' +
+						'</table>' +
+						'<div>' +
+						'<a class="pull-right" style="cursor: pointer; color: #72ACE3" id=#{opId} onclick="operation(#{oid})"></a>' +
+						'<a class="pull-right" style="cursor: pointer; color: #72ACE3; padding: 0 15px;" href="orderInfo.html?oid=#{oid}">订单详情</a>' +
+						'<span class="pull-right" style="padding: 0 15px;">订单总金额：¥<label style="color: red">#{totalPrice}</label>元</span>' +
+						'</div>' +
+						'</div>' +
+						'</div>'
+
+				element = element.replace(/#{oid}/g, oid)
+				let orderTime = getDate(orderVO.orderTime)
+				element = element.replace(/#{orderTime}/g, orderTime)
+				element = element.replace(/#{name}/g, orderVO.recvName)
+				element = element.replace(/#{tbId}/g, tbId)
+				element = element.replace(/#{allPriceId}/g, apId)
+				element = element.replace(/#{opId}/g, opId)
+				element = element.replace(/#{totalPrice}/g, orderVO.totalPrice)
+				$("#orderDetail").append(element)
+			}
+
+			// 因为VO无法支撑后续开发，所以重构了VO，
+			function showOrderVOs(url, status){
+				$.ajax({
+					url: url,
+					type: "post",
+					data: {
+						"status": status
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							let list = json.data
+							if(list.length > 0){
+								for (let i = 0; i < list.length; i++){
+									// 先处理该用户第一条订单的地址等信息
+									let orderVO = list[i]
+									let oid = orderVO.oid
+									let tbId = "tb" + oid.toString()
+									let apId = "ap" + oid.toString()
+									let opId = "op" + oid.toString()
+									elementHandle(orderVO, tbId, apId, opId)
+									let odItList = list[i].orderItems
+									if(odItList.length > 0){
+										for (let j = 0; j < odItList.length; j++){
+											let tr = '<tr>' +
+													'<td><img src="..#{image}collect.png" class="img-responsive" /></td>' +
+													'<td>#{title}</td>' +
+													'<td>¥<span>#{price}</span></td>' +
+													'<td>#{num}件</td>' +
+													'<td>¥<span>#{subPrice}</span></td>' +
+													'<td>' +
+													'<div>#{status}</div>' +
+													'</td>' +
+													'</tr>'
+											tr = tr.replace(/#{image}/g, odItList[j].image)
+											tr = tr.replace(/#{title}/g, odItList[j].title)
+											tr = tr.replace(/#{price}/g, odItList[j].price)
+											tr = tr.replace(/#{num}/g, odItList[j].num)
+											let subPrice = parseFloat((odItList[j].price * odItList[j].num).toString())
+											tr = tr.replace(/#{subPrice}/g, subPrice)
+											let status = setStatus(orderVO.status)
+											let option = setOption(status)
+											tr = tr.replace(/#{status}/g, status)
+											$("#"+tbId).append(tr)
+											$("#"+opId).html(option)
+										}
+									}
+								}
+							}
+						} else{
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

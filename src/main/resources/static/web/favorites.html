@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<!--edge浏览器H5兼容设置-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!--360浏览器H5兼容设置-->
+		<meta name="renderer" content="webkit" />
+		<title>电脑商城</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--导入核心文件-->
+		<script src="../static/bootstrap3/js/holder.js"></script>
+		<link href="../static/bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<script src="../static/bootstrap3/jquery-1.8.3.min.js"></script>
+		<script src="../static/bootstrap3/js/bootstrap.js"></script>
+		<!-- 字体图标 -->
+		<link rel="stylesheet" href="../static/bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/top.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/footer.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/favorites.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/imgmove.css" />
+		<script src="../static/js/favorites.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../static/js/imgmove.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" type="text/css" href="../static/css/font-awesome1.min.css">
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css">
+		<script src="../static/js/error.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../static/js/jquery-getUrlParam.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" href="../static/css/layui.css">
+		<script src="../static/js/layui.js"></script>
+		<script src="../static/js/laypage.js"></script>
+
+		<script type="text/javascript">
+			let page = 1 // 设置首页页码
+			let limit = 8 // 每页的数据条数
+			let size = 16 // 总条数
+			$(function (){
+				$(".header").load("template/head.html")
+				$(".footer").load("template/footer.html")
+				$(".middleBar").load("template/middleBar.html")
+			})
+
+			$(function (){
+				collectList()
+				paging()
+			})
+
+
+		</script>
+	</head>
+
+	<body>
+		<!--头部-->
+		<header class="header"></header>
+		<!--导航 -->
+		<!--分割导航和顶部-->
+		<div class="middleBar"></div>
+		<!--头部结束-->
+		<!--导航结束-->
+		<div class="container">
+			<div class="col-md-offset-1 col-md-10"><b>我的收藏：</b></div>
+			<div>
+				<div id="collectList" class="col-md-offset-1 col-md-10">
+					<!--		待填充内容		-->
+				</div>
+				<div class="text-center pt-2" id="bar-pages"></div>
+			</div>
+		</div>
+
+		<div class="clearfix"></div>
+		<footer class="footer"></footer>
+		<!--页脚结束-->
+		<script type="text/javascript">
+			let flag = true
+
+			function setTotal(){
+				if(flag){ // 只有第一次或者取消收藏之后才获取数据总条数
+					$.get("/product/get_count", function (json){
+						size = json.data
+						flag = false
+						paging(size)
+					})
+				}
+			}
+
+			function addToCart(pid){
+				let num = 1
+				$.ajax({
+					url: "/cart/add_to_cart",
+					type: "post",
+					data: {
+						"id": pid,
+						"num": num
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							location.href="cart.html"
+						} else{
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			let cnt
+
+			function cancelCollect(pid){
+				if(cnt === 1){  // 判断当前页中是否还有最后一个元素
+					let curr = parseInt($(".layui-laypage-curr em:last-child").text())
+					alert("curr = " + curr)
+					page = curr - 1
+				}
+				$.ajax({
+					url: "/product/cancel_collect",
+					type: "post",
+					data: {
+						"pid": pid,
+						"status": 0
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							$("#collectList").empty()
+							flag = true
+							setTotal()
+							collectList()
+						} else{
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+				cnt--
+				if(cnt === 0){
+					cnt = limit // 除了最后一页，其余页数据数量都是满的
+				}
+			}
+
+			function collectList(){
+				$.ajax({
+					url: "/product/get_collects",
+					type: "post",
+					data: {
+						"page": page,
+						"limit": limit
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							let list = json.data
+							if(list.length > 0){
+								cnt = list.length
+								for (let i = 0; i < list.length; i++){
+									let dv = '<div class="col-md-3">' +
+											'<div class="goods-panel">' +
+											'<img src="..#{image}collect.png" class="img-responsive"/>' +
+											'<p>￥#{price}</p>' +
+											'<div class="text-row-3">' +
+											'<a href="product.html?pid=#{pid}">' +
+											'<p class="text-row-3"><a href="product.html?id=#{pid}" style="cursor: pointer; color: #72ACE3"><small>#{title}</small></a></p>' +
+											'</a>' +
+											'</div>' +
+											'<span style="padding-right: 10px">' +
+											'<a onclick="cancelCollect(#{pid})" class="btn btn-default btn-xs add-fav"><span class="fa fa-heart"></span>取消收藏</a>' +
+											'</span>' +
+											'<span style="padding-right: 10px">' +
+											'<a onclick="addToCart(#{pid})" class="btn btn-default btn-xs add-cart"><span class="fa fa-cart-arrow-down"></span>加入购物车</a>' +
+											'</span></div></div>'
+									dv = dv.replace(/#{price}/g, list[i].price)
+									dv = dv.replace(/#{image}/g, list[i].image)
+									dv = dv.replace(/#{title}/g, list[i].title)
+									dv = dv.replace(/#{pid}/g, list[i].pid)
+									$("#collectList").append(dv)
+								}
+							} else{
+								confirm(json.state + ": " + json.message)
+							}
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			function paging(size){
+				layui.use('laypage', function (){
+					let laypage = layui.laypage
+					laypage.render({
+						elem: 'bar-pages',
+						count: size,
+						limit: limit,
+						curr: parseInt($(".layui-laypage-curr em:last-child").text()), // 获取当前页码
+						jump: function (obj, first) {
+							// obj包含了当前分页的所有参数, 比如
+							page = obj.curr // 改变当前页码
+							limit = obj.limit
+							setTotal() // 获取数据总条数
+							if(!first){
+								$("#collectList").empty()
+								collectList() // 首次不执行
+							}
+						}
+					})
+				})
+			}
+		</script>
+	</body>
+
+</html>

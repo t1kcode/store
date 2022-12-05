@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<!--edge浏览器H5兼容设置-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!--360浏览器H5兼容设置-->
+		<meta name="renderer" content="webkit" />
+		<title>电脑商城</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--导入核心文件-->
+		<script src="../static/bootstrap3/js/holder.js"></script>
+		<link href="../static/bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<script src="../static/bootstrap3/jquery-1.9.1.min.js"></script>
+		<script src="../static/bootstrap3/js/bootstrap.js"></script>
+		<!-- 字体图标 -->
+		<link rel="stylesheet" href="../static/bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/top.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/footer.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/orderConfirm.css" />
+		<script type="text/javascript" src="../static/js/jquery-getUrlParam.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="../static/css/font-awesome1.min.css">
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css">
+		<script src="../static/js/error.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			$(function (){
+				$(".header").load("template/head.html")
+				$(".footer").load("template/footer.html")
+				$(".middleBar").load("template/middleBar.html")
+			})
+
+			$(function (){
+				getOrderInfo()
+			})
+		</script>
+
+	</head>
+
+	<body>
+		<!--头部-->
+		<header class="header"></header>
+		<!--导航 -->
+		<!--分割导航和顶部-->
+		<div class="middleBar"></div>
+		<!--头部结束-->
+		<!--导航结束-->
+		<div class="container">
+			<div class="col-md-offset-1 col-md-10">
+				<div class="col-md-4">
+					<div class="col-md-12 order-bar-undo">
+						1.确认订单信息
+						<span class="pull-right"><span class="fa fa-chevron-right"></span></span>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="col-md-12 order-bar-active">
+						2.在线支付
+						<span class="pull-right"><span class="fa fa-chevron-right"></span></span>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="col-md-12 order-bar-undo">
+						3.付款成功
+					</div>
+				</div>
+				<div class="col-md-12">
+					<form role="form">
+						<div class="form-group">
+							<label>
+								<p>选择支付方式：</p>
+							</label>
+							<div class="text-center">
+								<label class="radio-inline">
+									<input type="radio" name="optionsRadios" id="optionsRadios1" checked="checked"> 支付宝
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="optionsRadios" id="optionsRadios2" disabled="disabled"> 微信
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="optionsRadios" id="optionsRadios3" disabled="disabled"> 网银
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="optionsRadios" id="optionsRadios4" disabled="disabled"> 货到付款
+								</label>
+							</div>
+						</div>
+						<div id="payInfo">
+							
+						</div>
+						<div class="pay-bar">
+							<a style="cursor: pointer" onclick="getBack()">返回上一步</a>
+							<span style="position:relative; left: 600px"><input id="btn-cancel-order" type="button" value="取消订单" class="btn btn-primary btn-lg link-pay"/></span>
+							<span class="pull-right"><input type="button" value="确认付款" onclick="pay()" class="btn btn-primary btn-lg link-success"/></span>
+						</div>
+					</form>
+					<div id="test">
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--页脚开始-->
+		<div class="clearfix"></div>
+		<footer class="footer"></footer>
+		<!--页脚结束-->
+		<script type="text/javascript">
+
+			function setOrderInfo(orderInfo){
+				let orderId = "11010003" + orderInfo.oid.toString()
+				let totalPrice = orderInfo.totalPrice
+				let dv = '<div>订单号：<label id="oid" style="color: red">#{oid}</label>' +
+						' ，支付金额￥<label id="price" style="color: red">#{price}</label>元' +
+						'<label>，收款方小茆电脑商城</label>' +
+						'</div>'
+				dv = dv.replace(/#{oid}/g, orderId)
+				dv = dv.replace(/#{price}/g, totalPrice)
+				$("#payInfo").append(dv)
+			}
+			let oid = sessionStorage.getItem("oid")
+			sessionStorage.removeItem("oid")
+			let totalPrice = 0
+			function getOrderInfo(){
+				$.ajax({
+					url: "/order/get_orderInfo",
+					type: "post",
+					data: {
+						"oid": oid
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							setOrderInfo(json.data)
+							totalPrice = json.data.totalPrice
+						} else{
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			function pay(){
+				$.ajax({
+					url: "/alipay/create",
+					type: "post",
+					data: {
+						"oid": oid,
+						"totalPrice": totalPrice
+					},
+					dataType: "html",
+					success: function (html){
+						sessionStorage.setItem("html", html)
+						location.href="pay.html"
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			$("#btn-cancel-order").click(function (){
+				let oid = $.getUrlParam("oid")
+				if(oid === null){
+					confirm("没有订单信息")
+				} else{
+					if(confirm("确定要取消该订单吗？")){
+						$.ajax({
+							url: "/order/receipt",
+							type: "post",
+							data: {
+								"oid": oid,
+								"status": 2
+							},
+							dataType: "json",
+							success: function (json){
+								if(json.state === 200){
+									location.href="cart.html"
+								} else{
+									confirm(json.state + ": " + json.message)
+								}
+							},
+							error: function (xhr){
+								error(xhr)
+							}
+						})
+					}
+				}
+			})
+
+			function getBack(){
+				// 获取上一页的url
+				location.href = document.referrer
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.t1k.store.mapper.OrderVOMapper">
+
+    <resultMap id="getOrderVOs" type="com.t1k.store.vo.OrderVO">
+        <id column="oid" property="oid"/>
+        <result column="aid" property="aid"/>
+        <result column="recvName" property="recvName"/>
+        <result column="totalPrice" property="totalPrice"/>
+        <result column="status" property="status"/>
+        <result column="orderTime" property="orderTime"/>
+        <result column="payTime" property="payTime"/>
+        <result column="zip" property="zip"/>
+        <result column="address" property="address"/>
+        <result column="provinceName" property="provinceName"/>
+        <result column="phone" property="phone"/>
+        <result column="cityName" property="cityName"/>
+        <result column="areaName" property="areaName"/>
+        <collection property="orderItems" ofType="com.t1k.store.entity.OrderItem" javaType="java.util.List">
+            <id column="id" property="id"/>
+            <result column="image" property="image"/>
+            <result column="title" property="title"/>
+            <result column="price" property="price"/>
+            <result column="num" property="num"/>
+        </collection>
+    </resultMap>
+    <select id="getOrderVOs" resultMap="getOrderVOs" resultType="com.t1k.store.vo.OrderVO">
+        SELECT a.oid, a.aid, a.recv_name AS recvName, a.total_price AS totalPrice,
+               a.status, a.order_time AS orderTime, a.pay_time AS payTime,
+               b.image, b.title, b.price, b.num,
+               c.zip, c.address, c.province_name AS provinceName, c.phone, c.city_name AS cityName, c.area_name AS areaName
+        FROM
+            order_user a
+        LEFT JOIN
+            address c ON a.aid = c.aid
+        LEFT JOIN
+            order_item b ON a.oid = b.oid
+        WHERE
+            a.uid=#{uid}
+        ORDER BY a.status ASC, a.created_time DESC
+    </select>
+
+
+    <resultMap id="getOrderVOsByS" type="com.t1k.store.vo.OrderVO">
+        <id column="oid" property="oid"/>
+        <result column="aid" property="aid"/>
+        <result column="recvName" property="recvName"/>
+        <result column="totalPrice" property="totalPrice"/>
+        <result column="status" property="status"/>
+        <result column="orderTime" property="orderTime"/>
+        <result column="payTime" property="payTime"/>
+        <result column="zip" property="zip"/>
+        <result column="address" property="address"/>
+        <result column="provinceName" property="provinceName"/>
+        <result column="phone" property="phone"/>
+        <result column="cityName" property="cityName"/>
+        <result column="areaName" property="areaName"/>
+        <collection property="orderItems" ofType="com.t1k.store.entity.OrderItem" javaType="java.util.List">
+            <id column="id" property="id"/>
+            <result column="image" property="image"/>
+            <result column="title" property="title"/>
+            <result column="price" property="price"/>
+            <result column="num" property="num"/>
+        </collection>
+    </resultMap>
+    <select id="getOrderVOsByS" resultMap="getOrderVOsByS" resultType="com.t1k.store.vo.OrderVO">
+        SELECT a.oid, a.aid, a.recv_name AS recvName, a.total_price AS totalPrice,
+               a.status, a.order_time AS orderTime, a.pay_time AS payTime,
+               b.image, b.title, b.price, b.num,
+               c.zip, c.address, c.province_name AS provinceName, c.phone, c.city_name AS cityName, c.area_name AS areaName
+        FROM
+            order_user a
+                LEFT JOIN
+            address c ON a.aid = c.aid
+                LEFT JOIN
+            order_item b ON a.oid = b.oid
+        WHERE
+            a.uid=#{uid} AND a.status=#{status}
+        ORDER BY a.status ASC, a.created_time DESC
+    </select>
+
+
+    <resultMap id="getOrderVO" type="com.t1k.store.vo.OrderVO">
+        <id column="oid" property="oid"/>
+        <result column="aid" property="aid"/>
+        <result column="recvName" property="recvName"/>
+        <result column="totalPrice" property="totalPrice"/>
+        <result column="status" property="status"/>
+        <result column="orderTime" property="orderTime"/>
+        <result column="payTime" property="payTime"/>
+        <result column="zip" property="zip"/>
+        <result column="address" property="address"/>
+        <result column="provinceName" property="provinceName"/>
+        <result column="phone" property="phone"/>
+        <result column="cityName" property="cityName"/>
+        <result column="areaName" property="areaName"/>
+        <collection property="orderItems" ofType="com.t1k.store.entity.OrderItem" javaType="java.util.List">
+            <id column="id" property="id"/>
+            <result column="image" property="image"/>
+            <result column="title" property="title"/>
+            <result column="price" property="price"/>
+            <result column="num" property="num"/>
+        </collection>
+    </resultMap>
+    <select id="getOrderVO" resultMap="getOrderVO" resultType="com.t1k.store.vo.OrderVO">
+        SELECT a.oid, a.aid, a.recv_name AS recvName, a.total_price AS totalPrice,
+               a.status, a.order_time AS orderTime, a.pay_time AS payTime,
+               b.image, b.title, b.price, b.num,
+               c.zip, c.address, c.province_name AS provinceName, c.phone, c.city_name AS cityName, c.area_name AS areaName
+        FROM
+            order_user a
+                LEFT JOIN
+            address c ON a.aid = c.aid
+                LEFT JOIN
+            order_item b ON a.oid = b.oid
+        WHERE
+            a.uid=#{uid} and a.oid=#{oid}
+        ORDER BY a.status ASC, a.created_time DESC
+    </select>
+
+
+</mapper>
+

@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/store?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: 123
+
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 20MB
+  # 配置静态资源路径，为了将图片保存在项目外
+  web:
+    resources:
+      static-locations: classpath:/META-INF/,classpath:/static/web/,classpath:/static/,classpath:/static/static/,file:${web.upload-path}
+  main:
+    allow-circular-references: true
+web:
+  upload-path: D:/data/gc/
+
+user:
+  address:
+    max-size: 20
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:mapper/**/**.xml
+#  在打包时需要修改xml文件路径
+
+server:
+  port: 8080
+
+alipay:
+  url: https://openapi.alipaydev.com/gateway.do
+  appid: 2021000121694010
+  privateKey: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCXP7mkS+96iE4z1K/zyAaPeCO+O9qNTQOPHB3rnMJXjPrkHufQ/NRoZEwopvGoIUIBVyvZ+zkWmnzHHWur8V+YdX50tgthdYsrxHi4j0fQ9upVcGLViERKaK4W5o6e9+mGhgcfQJJncgOicOcHwVAXsRBtG7uArrQl7PPa+V3kYq+OAQGJk4ELiKkGrD5jUHyfWWCZnUMlzuLzgdU0p/Hcuxi06/qumQim2DH2csouIgUrrOj4clPg3AjTm3L9leQQUTGt8oQtfeaBcoo6S7fqbo3ZMkTJi2HkeKEaFaidDQAjyw/BwAjtoj8pwM+8mVCR7Z73z56YAc0QDZgbC/7HAgMBAAECggEALj6XvjpRgH+ImaRgIAN6rgcntpSKYEW53tnT9CQ775T1aSZh7q4/K6Pu/Ub+AFAa5FoI2F9NtzGJEUBXmXz1o6HZBkpa9HOCF+G8n4F/jc7RG0p/jZZaev3CrNHVrZlTV4RHTTDrEqHzpokqul5K5NOImDOwgsnn3uiyLrOsF5X0G8K4aIzN+gRgaa6NaY0/AdaZPKiKW7MCnKcpKaJWgSC8l2COoXGK89k6IoMEAK4Pa3GH0/St/EpzfaYJ7j+/rvfE+rUfB7m7DCaqnEKbQevdcOZAOZjKBbywCLBaqY56H/U80waum50ftVglJOSGA2BWd25fYolnDYoy15bqUQKBgQDWjUsNCPQNT6R5dGhrvah2GqNre9Yw82CYUNhj671KBgx7GilM4gNYUCHc5qJTxgUk3ndVyxEr5ef1ZGgbMZwljAva848ix/UqGzxIhHw3T0zW+MIMUW549gEeMCbcAgepHxbxd3RrqhXl8y60GKapnur0dNrsvgUpAMK/8YN6kwKBgQC0d8Ua3U7bJ94FvizwuEZi34AHui5Pv1Rg3pU70i92wtabdO39D0wfAoSVdGvVlvkt9XQVRCo4pyolRJy/gaaGJBooUg9ygVmVaMVPPZnZuQM2zZXX8BBlAK0LaulddTc4bX+MipbRISjPBmHv7yZoZoyyb3mT0SLR6Z0QZ1hnfQKBgQC6JURkPsxfcCXnKlQehiJOtbXrXznqpn28KQhVSQal3rGdbIlApyb3zC5VFdTokfmMj2dCDDkNuR6TDVY1ockz2lm+0WnyZ0ISEicvU6Lh6e9k49aYEV6jm+xEYMqWPzyeQtcJEPb1IlB1fZObtXeD2tlG1svKcuLPPFW7arMD+QKBgG4M/6CzRmw0sprz7vnYleujebK8oZM2DOGJup2hPhqBFFf2hU6lrnjWkz2EomG80DVrkh+J0ul7XyMc5S2PhZoVl/HwoMTmBlgrbO82lISF42TfF7p4BbdiIyRsTOUWHteFRpvQw8nCG92rebvULarKppAFlLFEfqRdfs9LBkkNAoGAVta8hTpKwb0AnAvsEQMsFgRpFon85tfxffVG37Kk6FAXMji3EH336Wo003dRF5AugHItt/R8EEppjA4jjB4W1kByHyPu/CaV+QGnkJQg/9/K0Ojh78LAW+nt/6q9MwoXklV+8QpXjDc7cXTyAN0lzptNwBI65fpeBOScLT01XXI=
+  publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlzy0M0G5XqPkItYUVbetH1cJZ3gRyJ49MidLaO1QgvRhcsQrx3+vUl2X5KvM80evgg4UA1h/DY2fwCQ2bpdHzPZXLm/7D14hhfiQY+dine494Z0mRRTVFsicZyvnnXaaAkgeyIDxwyIxNJz2oX484ERYMDSKlB66fg17n9DLHgmhDMczWcSxK79vvcblcJkVLiCmlFKbW4UUH8ECm+BdkK32zs2LM2mUxWIJc7gNxUE0MTx8Xb2mqhZygcNyzl6zfR+p4fNcV/p1WNHdl3biTwx18Pz09ghznCKCF6yFK3xeCtJDyZZyYmIm/Kd2zs+I8ubnluJPLf61ut38qtdm2QIDAQAB
+  notifyUrl:
+  returnUrl: http://localhost:${server.port}/web/paySuccess.html
+

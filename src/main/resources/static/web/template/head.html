@@ -1,0 +1,133 @@
+<!--电脑商城logo-->
+<div class="row">
+    <div class="col-md-3">
+        <a href="index.html">
+            <img src="../static/images/index/stumalllogo.png" />
+        </a>
+    </div>
+    <!--快捷选项-->
+    <div class="col-md-9 top-item">
+        <ul class="list-inline pull-right">
+            <li>
+                <button id="top-collect" type="button" class="btn btn-link dropdown-toggle">
+                    <a href="favorites.html" style="cursor: pointer; color: #72ACE3"><span class="fa fa-heart1"></span>&nbsp;收藏</a>
+                </button>
+            </li>
+            <li class="li-split">|</li>
+            <li>
+                <button id="top-order" type="button" class="btn btn-link dropdown-toggle">
+                    <a href="orders.html" style="cursor: pointer; color: #72ACE3"><span class="fa fa-file-text"></span>&nbsp;订单</a>
+                </button>
+            </li>
+            <li class="li-split">|</li>
+            <li>
+                <button id="top-cart" type="button" class="btn btn-link dropdown-toggle">
+                    <a href="cart.html" style="cursor: pointer; color: #72ACE3"><span class="fa fa-cart-plus"></span>&nbsp;购物车</a>
+                </button>
+            </li>
+            <li class="li-split">|</li>
+            <li>
+                <!--下列列表按钮 ：管理-->
+                <div class="btn-group">
+                    <button id="top-dropdown" type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
+                        <span id="top-dropdown-btn" style="cursor: pointer; color: #72ACE3"><span class="fa fa-gears"></span>&nbsp;管理 <span class="caret"></span></span>
+                    </button>
+                    <ul class="dropdown-menu top-dropdown-ul" role="menu">
+                        <li><a href="password.html" style="cursor: pointer; color: #72ACE3">修改密码</a></li>
+                        <li><a href="userdata.html" style="cursor: pointer; color: #72ACE3">个人资料</a></li>
+                        <li><a href="upload.html" style="cursor: pointer; color: #72ACE3">上传头像</a></li>
+                        <li><a href="address.html" style="cursor: pointer; color: #72ACE3">收货管理	</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="li-split">|</li>
+
+            <li>
+                <div class="header-controls">
+                    <div class="user-info-wrapper header-links">
+                        <a href="login.html" class="user-info"><img id="avatar" src="../static/images/index/user.jpg" alt="头像" class="user-img"></a>
+                        <div class="user-info-box">
+                            <div class="drop-down-header">
+                                <h4 id="username" style="color: white"></h4>
+                                <p></p>
+                            </div>
+                            <ul><li id="logout"></li></ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function (){
+        judgeRemember()
+    })
+    function logout(){
+        $.ajax({
+            url: "/api/auth/logout",
+            type: "get",
+            dataType: "json",
+            success: function (json){
+                if(json.state === 200){
+                    location.href = "index.html"
+                } else{
+                    confirm(json.state + ": " + json.message)
+                }
+            },
+            error: function (xhr){
+                error(xhr)
+            }
+        })
+    }
+
+    function judgeRemember(){
+        $.get("/api/auth/remember")
+        getInfo()
+    }
+
+    function getCookie(name) {
+        // 拆分 cookie 字符串
+        let cookieArr = document.cookie.split(";");
+        alert(cookieArr)
+
+        // 循环遍历数组元素
+        for(let i = 0; i < cookieArr.length; i++) {
+            let cookiePair = cookieArr[i].split("=");
+            /* 删除 cookie 名称开头的空白并将其与给定字符串进行比较 */
+            if(name === cookiePair[0].trim()) {
+                // 解码cookie值并返回
+                return decodeURIComponent(cookiePair[1]);
+            }
+        }
+        // 如果未找到，则返回null
+        return null;
+    }
+
+    function getInfo(){
+        $.ajax({
+            url: "/api/user/info",
+            type: "get",
+            dataType: "json",
+            success: function (json) {
+                let logout = $("#logout")
+                if(json.state === 200){
+                    $("#username").html(json.data.username)
+                    $("#avatar").prop("src", json.data.avatar)
+                    logout.html('<a style="cursor: pointer; color: #72ACE3" onclick="logout()"><i class="fas1 fa-sign-out-alt"></i> 退出登录</a>')
+                } else{
+                    logout.html('<a style="cursor: pointer; color: #72ACE3" href="login.html"><i class="fas1 fa-user"></i> 未登录</a>')
+                    $("#top-dropdown").attr("disabled", true)
+                    $("#top-collect").attr("disabled", true)
+                    $("#top-order").attr("disabled", true)
+                    $("#top-cart").attr("disabled", true)
+                    $("#btn-submit").attr("disabled", true)
+                }
+            },
+            error: function (xhr){
+                error(xhr)
+            }
+        })
+    }
+</script>

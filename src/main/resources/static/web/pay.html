@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset = "UTF-8">
+    <title>支付宝沙盒支付</title>
+    <script src="../static/bootstrap3/jquery-1.9.1.min.js"></script>
+    <script src="../static/bootstrap3/js/holder.js"></script>
+    <link href="../static/bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" type="text/css" href="../static/css/font-awesome1.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+
+    <link rel="stylesheet" href="../static/css/layui.css">
+    <script src="../static/js/layui.js"></script>
+    <script src="../static/js/laypage.js"></script>
+
+    <script src="../static/bootstrap3/jquery-1.8.3.min.js"></script>
+    <script src="../static/bootstrap3/js/bootstrap.js"></script>
+    <script src="../static/js/menu.js" type="text/javascript" charset="utf-8"></script>
+    <!-- 字体图标 -->
+    <link rel="stylesheet" href="../static/bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/layout.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/webindex.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/footer.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/top.css" />
+    <script src="../static/js/error.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+        $(function (){
+            document.getElementById("pay").innerHTML = sessionStorage.getItem("html")
+            document.forms['punchout_form'].setAttribute('target', '_blank')
+            document.forms[0].submit()
+        })
+
+    </script>
+</head>
+<body>
+    <div id="pay">
+
+    </div>
+</body>
+</html>

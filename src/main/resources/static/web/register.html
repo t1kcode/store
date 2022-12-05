@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!--edge浏览器H5兼容设置-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!--360浏览器H5兼容设置-->
+		<meta name="renderer" content="webkit" />
+		<title>电脑商城</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--导入核心文件-->
+		<script src="../static/bootstrap3/js/holder.js"></script>
+		<link href="../static/bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<script src="../static/bootstrap3/jquery-1.9.1.min.js"></script>
+		<script src="../static/bootstrap3/js/bootstrap.js"></script>
+		<!-- 字体图标 -->
+		<link rel="stylesheet" href="../static/bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/top.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/index.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/reg.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/footer.css" />
+		<script src="../static/js/error.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			$(function (){
+				$(".footer").load("template/footer.html")
+			})
+		</script>
+	</head>
+	<body>
+		<!--头部-->
+		<header class="header">
+			<img src="../static/images/index/stumalllogo.png" alt="" />
+			<span class="pull-right"><small>欢迎访问</small><b>电脑商城</b></span>
+		</header>
+		<!--主体-->
+		<div class="container mycontent text-left">
+			<!--透明层 -->
+			<div class="regDiv">
+				<p>新用户注册</p>
+				<!--表单开始-->
+				<form id="form-reg" class="form-horizontal" role="form">
+					<!--用户名-->
+					<div class="form-group">
+						<label class="col-md-3 control-label">用户名：</label>
+						<div class="col-md-8">
+							<input id="username" name="username" type="text" class="form-control" minlength="3" maxlength="5" placeholder="请输入用户名">
+						</div>
+					</div>
+					<!--密码-->
+					<div class="form-group">
+						<label class="col-md-3 control-label"> 密码：</label>
+						<div class="col-md-8">
+							<input id="password1" name="password" type="password" class="form-control" minlength="3" maxlength="5" placeholder="请输入密码">
+						</div>
+					</div>
+					<!--确认密码-->
+					<div class="form-group">
+						<label class="col-md-3 control-label"> 确认密码：</label>
+						<div class="col-md-8">
+							<input id="password2" type="password" class="form-control" minlength="3" maxlength="5" placeholder="请再次输入密码">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">验证码：</label>
+						<div class="col-md-8">
+							<label>
+								<input type="text" class="form-control" id="code" style="width: 120px; vertical-align:middle"  placeholder="请输入验证码">
+							</label>
+							<label>
+								<img id="kaptcha" style="position:relative; left: 93px; height: 34px; vertical-align:middle" src="http://localhost:8080/kaptcha/kaptcha-image" />
+							</label>
+						</div>
+					</div>
+					<!--提交按钮-->
+					<div class="form-group">
+						<label class="col-md-3 control-label"></label>
+						<div class="col-md-8">
+							<input id="btn-reg" class="btn btn-primary" type="button" value="立即注册" />
+							<span class="pull-right"><small>已经有账号？</small><a href="login.html">登录</a></span>
+						</div>
+					</div>
+					<div>
+						<label id="info" style="position:relative; left:130px; color: red"></label>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!--页脚开始-->
+		<footer class="footer"></footer>
+		<!--页脚结束-->
+		<script type="text/javascript">
+
+			let kaptcha = $("#kaptcha") // 绑定验证码控件
+
+			kaptcha.click(function (){ // 验证码点击事件
+				reFlashImg()
+			})
+
+			function reFlashImg() {
+				// 向后端请求验证码时需要加上时间参数
+				document.getElementById("kaptcha").src = "http://localhost:8080/kaptcha/kaptcha-image?time="+ new Date();
+			}
+
+			let ctr = $("#info") // 绑定信息控件
+			// 判断各种数据格式是否正确
+			function judgeData(){
+				let flag = true
+				let reg = /^[a-zA-Z]\w{2,5}$/i
+				let reg1 = /^\w{2,5}$/i
+				let username = $("#username").val()
+				let p1 = $("#password1").val()
+				let p2 = $("#password2").val()
+				let code = $("#code").val()
+				if(username.trim().length < 3){
+					setInfo("用户名长度必须为3及以上", ctr)
+					flag = false
+				} else if(!reg.test(username)){
+					setInfo("用户名必须为数字和字母且第一位不能为数字", ctr)
+					flag = false
+				} else if(p1.trim().length < 3){
+					setInfo("密码长度必须为3及以上", ctr)
+					flag = false
+				} else if(!reg1.test(p1)){
+					setInfo("密码必须为数字和字母", ctr)
+					flag = false
+				} else if(p1 !== p2){
+					setInfo("两次密码不相同", ctr)
+					flag = false
+				} else if(code.trim().length === 0){
+					setInfo("请填写验证码", ctr)
+					flag = false
+				}
+				return flag
+			}
+
+			// 注册按钮点击事件
+			$("#btn-reg").click(function (){
+				if(judgeData()){
+					$.ajax({
+						url: "/api/auth/code",
+						type: "post",
+						data: {
+							"code": $("#code").val()
+						},
+						dataType: "json",
+						success: function (json){
+							if(json.state !== 200){
+								setInfo("验证码错误", ctr)
+							} else{
+								// $("#form-reg").serialize()
+								$.ajax({
+									url: "/api/auth/reg",
+									type: "POST",
+									data: {
+										"username": $("#username").val(),
+										"password": $("#password1").val()
+									},
+									dataType: "JSON",
+									success: function (json) {
+										if(json.state === 200){
+											confirm("注册成功")
+										}
+										else{
+											confirm(json.state + ": " + json.message)
+										}
+									},
+									error: function (xhr){
+										error(xhr)
+									}
+								})
+							}
+						},
+						error: function (xhr){
+							error(xhr)
+						}
+					})
+				}
+			})
+		</script>
+	</body>
+
+</html>

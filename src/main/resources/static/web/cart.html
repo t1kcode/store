@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!--edge浏览器H5兼容设置-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!--360浏览器H5兼容设置-->
+		<meta name="renderer" content="webkit" />
+		<title>电脑商城</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--导入核心文件-->
+		<script src="../static/bootstrap3/js/holder.js"></script>
+		<link href="../static/bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<script src="../static/bootstrap3/jquery-1.9.1.min.js"></script>
+		<script src="../static/bootstrap3/js/bootstrap.js"></script>
+		<!-- 字体图标 -->
+		<link rel="stylesheet" href="../static/bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/top.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/footer.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/cart.css" />
+
+		<link rel="stylesheet" type="text/css" href="../static/css/font-awesome1.min.css">
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css">
+		<script src="../static/js/error.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			$(function (){
+				$(".header").load("template/head.html")
+				$(".footer").load("template/footer.html")
+				$(".middleBar").load("template/middleBar.html")
+			})
+		</script>
+	</head>
+
+	<body>
+		<!--头部-->
+		<header class="header"></header>
+		<!--导航 -->
+		<!--分割导航和顶部-->
+		<div class="middleBar"></div>
+		<!--头部结束-->
+		<!--导航结束-->
+		<div class="container">
+			<div class="col-md-offset-1 col-md-10">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<p class="panel-title"><span class="fa fa-shopping-cart"></span> 购物车</p>
+					</div>
+					<div class="panel-body">
+						<form id="form-cart" role="form">
+							<!--购物车表格开始-->
+							<table class="cart-table" width="100%">
+								<thead>
+									<tr>
+										<th width="8%">
+											<input type="checkbox" class="ckall" onclick="checkAll(this)" />全选</th>
+										<th width="110"></th>
+										<th width="29%">商品</th>
+										<th width="11%">单价</th>
+										<th width="15%">数量</th>
+										<th width="11%">金额</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody id="cart-list" class="cart-body"></tbody>
+							</table>
+							<div class="total-bar">
+								<a href="javascript:selDelCart()" class="cart-del-sel btn btn-default btn-xs">删除所选商品</a>
+								<span class="pull-right">已选商品
+								<span id="selectCount" style="color: red">0</span>件 总价¥
+								<span id="selectTotal" style="color: red">0</span>元
+								</span>
+							</div>
+							<div>
+								<span class="pull-right">
+								<input type="button" onclick="settlement()" value="  结  算  " class="btn btn-primary btn-lg link-account" />
+							</span>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--页脚开始-->
+		<div class="clearfix"></div>
+		<footer class="footer"></footer>
+		<!--页脚结束-->
+		<script type="text/javascript">
+			$(function (){
+				showCarts()
+			})
+
+			let totalNum = 0
+			let totalPrice = 0
+
+			function showCarts(){
+				$.ajax({
+					url: "/cart/get_cartVOs",
+					type: "get",
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							let list = json.data
+							if(list.length > 0){
+								for (let i = 0; i < list.length; i++){
+									let ckId = "ckid" + i.toString()
+									let priceId = "goodsPrice" + i.toString()
+									let countId = "goodsCount" + i.toString()
+									let castId = "goodsCast" + i.toString()
+									let tr = '<tr>' +
+											'<td>' +
+											'<input id="#{ckId}" onclick="checkOne(#{i})" name="cids" value="#{cid}" type="checkbox" class="ckitem" />' +
+											'</td>' +
+											'<td><img src="..#{image}collect.png" class="img-responsive" /></td>' +
+											'<td>#{title}</td>' +
+											'<td>¥<span id="#{priceId}">#{price}</span></td>' +
+											'<td>' +
+											'<input type="button" value="-" class="num-btn" onclick="reduceNum(#{cid}, #{i})" />' +
+											'<input id= "#{countId}" type="text" size="2" readonly="readonly" class="num-text" value=#{num}>' +
+											'<input class="num-btn" type="button" value="+" onclick="addNum(#{cid}, #{i})" />' +
+											'</td>' +
+											'<td>¥<span id="#{castId}">#{money}</span></td>' +
+											'<td>' +
+											'<input type="button" onclick="delCart(#{cid})" class="cart-del btn btn-default btn-xs" value="删除" />' +
+											'</td>' +
+											'</tr>'
+									tr = tr.replace(/#{ckId}/g, ckId)
+									tr = tr.replace(/#{priceId}/g, priceId)
+									tr = tr.replace(/#{countId}/g, countId)
+									tr = tr.replace(/#{castId}/g, castId)
+									tr = tr.replace(/#{i}/g, i.toString())
+									tr = tr.replace(/#{image}/g, list[i].image)
+									tr = tr.replace(/#{title}/g, list[i].title)
+									tr = tr.replace(/#{price}/g, list[i].realPrice)
+									let money = list[i].realPrice * list[i].num
+									tr = tr.replace(/#{money}/g, money.toString())
+									tr = tr.replace(/#{num}/g, list[i].num)
+									tr = tr.replace(/#{cid}/g, list[i].cid)
+									$("#cart-list").append(tr)
+									totalNum += list[i].num
+									totalPrice += money
+								}
+							}
+						} else{
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			let price // 商品价格控件
+			let count // 商品数量控件
+			let cast // 该商品总金额控件
+
+			function getCtrl(rid){
+				price = $("#goodsPrice"+rid)
+				count = $("#goodsCount"+rid)
+				cast = $("#goodsCast"+rid)
+			}
+
+			//计算单行小计价格的方法
+			function calcRow(){
+				//取单价
+				let vprice = parseFloat(price.html());
+				//取数量
+				let vnum = parseFloat(count.val());
+				//小计金额
+				let vtotal = vprice * vnum;
+				//赋值
+				cast.html(vtotal);
+			}
+
+			function reduceNum(cid, rid){
+				getCtrl(rid)
+				let num = parseInt(count.val()) - 1;
+				if (num === 0)
+					return;
+				count.val(num);
+				calcRow();
+				changeNum(cid, num)
+			}
+
+			function addNum(cid, rid){
+				getCtrl(rid)
+				let num = parseInt(count.val()) + 1;
+				if (num === 20){
+					confirm("修改失败，超出库存或购买限制")
+					return;
+				}
+				count.val(num);
+				calcRow();
+				changeNum(cid, num)
+			}
+
+			function changeNum(cid, num){
+				$.ajax({
+					url: "/cart/change_cartNum",
+					type: "post",
+					data: {
+						"cid": cid,
+						"num": num
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state !== 200){
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			let countCtrl = $("#selectCount")
+			let totalCtrl = $("#selectTotal")
+			let cids = Array.of()
+
+			function setCids(){
+				// 获取当前购物车中有多少商品
+				let cartLength = $("#cart-list").children("tr").length
+				for (let i = 0; i < cartLength; i++){
+					let ck = $("#ckid" + i.toString())
+					cids.push(parseInt(ck.val()))
+				}
+			}
+
+			function clearCids(){
+				cids.length = 0
+			}
+
+			// 全选全不选
+			function checkAll(ckbtn) {
+				//根据全选按钮的状态设置所有class为ckitem的选中状态
+				$(".ckitem").prop("checked", $(ckbtn).prop("checked"));
+				// 表示全选状态为取消
+				if($(ckbtn).prop("checked") === false){
+					countCtrl.empty().html(0)
+					totalCtrl.empty().html(0)
+					clearCids()
+				} else{
+					// 设置选择的商品数量和总价
+					countCtrl.empty().html(totalNum)
+					totalCtrl.empty().html(totalPrice)
+					setCids()
+				}
+			}
+
+			let theNum = 0
+			let thePrice = 0
+
+			function checkOne(rid){
+				let ck = $("#ckid" + rid)
+				// 获取当前购物车中有多少商品
+				let cartLength = $("#cart-list").children("tr").length
+				// 获取已被选中的单选框的数量
+				let ckNum = $(".ckitem:checked").length
+				// 判断是否全被选中
+				if(cartLength === ckNum){
+					let ckall = $(".ckall")
+					ckall.prop("checked", true)
+					checkAll(ckall)
+				} else{
+					getCtrl(rid)
+					if(ck.prop("checked") === true){
+						cids.push(parseInt(ck.val()))
+						theNum += parseInt(count.val())
+						thePrice += parseFloat(cast.html())
+
+					} else{
+						cids.splice(parseInt(ck.val()), 1)
+						theNum -= parseInt(count.val())
+						thePrice -= parseFloat(cast.html())
+					}
+					countCtrl.empty().html(theNum)
+					totalCtrl.empty().html(thePrice)
+				}
+			}
+
+			function delCart(cid){
+				if(confirm("确定要删除该商品吗？")){
+					$.ajax({
+						url: "/cart/del_cart",
+						type: "post",
+						data: {
+							"cid": cid,
+						},
+						dataType: "json",
+						success: function (json){
+							if(json.state === 200) {
+								location.href="cart.html"
+							} else{
+								confirm(json.state + ": " + json.message)
+							}
+						},
+						error: function (xhr){
+							error(xhr)
+						}
+					})
+				}
+			}
+
+			function selDelCart(){
+				if (cids.length > 0){
+					cids = JSON.stringify(cids) // 将数组转换为字符串返回
+					if (confirm("确定要删除所选商品吗？")){
+						$.ajax({
+							url: "/cart/sel_del_cart",
+							type: "post",
+							data: {
+								"cids": cids
+							}, // 不能采用"cids="+cids这样加在url的方式返回，因为tomcat中特殊字符(例如" < > [ \ ] ^ ` { | } .)报错
+							dataType: "json",
+							success: function (json){
+								if (json.state === 200){
+									location.href = "cart.html"
+								} else{
+									confirm(json.state + ": " + json.message)
+								}
+							},
+							error: function (xhr){
+								error(xhr)
+							}
+						})
+					}
+					clearCids()
+				} else{
+					confirm("您没有选择任何商品")
+				}
+			}
+
+			function judgeCheck(){
+				let flag = true
+				if(cids.length === 0){
+					confirm("请先选择任意商品再进行结算")
+					flag = false
+				}
+				return flag
+			}
+
+			function settlement(){
+				if(judgeCheck()){
+					sessionStorage.setItem("cids", $("#form-cart").serialize())
+					location.href="orderConfirm.html"
+				}
+			}
+		</script>
+	</body>
+
+</html>

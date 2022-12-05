@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<!--edge浏览器H5兼容设置-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!--360浏览器H5兼容设置-->
+		<meta name="renderer" content="webkit" />
+		<title>电脑商城</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--导入核心文件-->
+		<script src="../static/bootstrap3/js/holder.js"></script>
+		<link href="../static/bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<script src="../static/bootstrap3/jquery-1.8.3.min.js"></script>
+		<script src="../static/bootstrap3/js/bootstrap.js"></script>
+		<!-- 字体图标 -->
+		<link rel="stylesheet" href="../static/bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/top.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/footer.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/search.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/imgmove.css" />
+		<script src="../static/js/search.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../static/js/imgmove.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" href="../static/css/layui.css">
+		<script src="../static/js/layui.js"></script>
+		<script src="../static/js/laypage.js"></script>
+		<link rel="stylesheet" type="text/css" href="../static/css/font-awesome1.min.css">
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css">
+		<script src="../static/js/error.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../static/js/jquery-getUrlParam.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+
+			$(function (){
+				$(".header").load("template/head.html")
+				$(".footer").load("template/footer.html")
+				$(".middleBar").load("template/middleBar.html")
+			})
+
+			$(function (){
+				searchList()
+			})
+		</script>
+	</head>
+
+	<body>
+		<!--头部-->
+		<header class="header">
+		</header>
+		<!--导航 -->
+		<!--分割导航和顶部-->
+		<div class="middleBar"></div>
+		<!--头部结束-->
+		<!--导航结束-->
+		<div class="container">
+			<div class="col-md-offset-1 col-md-10"><b>笔记本</b>&nbsp;<small>搜索结果：</small></div>
+			<div>
+				<div id="searchList" class="col-md-offset-1 col-md-10">
+					<!--		待填充内容		-->
+				</div>
+				<div class="text-center pt-2" id="bar-pages"></div>
+			</div>
+		</div>
+		<!--页脚开始-->
+		<div class="clearfix"></div>
+		<footer class="footer"></footer>
+		<!--页脚结束-->
+		<script type="text/javascript">
+			function setCollect(str, cls, pid){
+				let heart = $("#heart" + pid.toString())
+				let collect = $("#collect" + pid.toString())
+				collect.empty().html(str)
+				heart.prop("class", cls)
+			}
+
+			function addToCart(pid){
+				let num = 1
+				$.ajax({
+					url: "/cart/add_to_cart",
+					type: "post",
+					data: {
+						"id": pid,
+						"num": num
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							location.href="cart.html"
+						} else{
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			function judgeCls(pid){
+				let heart = $("#heart" + pid.toString())
+				let cls = heart.prop("class")
+				if(cls === "fa fa-heart"){
+					cancelCollect(pid)
+				} else if(cls === "fa fa-heart-o"){
+					addCollect(pid)
+				}
+			}
+
+			function setOpration(pid){
+				judgeCls(pid)
+			}
+
+			function cancelCollect(pid){
+				$.ajax({
+					url: "/product/cancel_collect",
+					type: "post",
+					data: {
+						"pid": pid,
+						"status": 0
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							setCollect(" 加入收藏", "fa fa-heart-o", pid)
+						} else{
+							setCollect(" 已收藏", "fa fa-heart", pid)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			function addCollect(pid){
+				$.ajax({
+					url: "/product/add_collect",
+					type: "post",
+					data: {
+						"pid": pid
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							setCollect(" 已收藏", "fa fa-heart", pid)
+						} else{
+							setCollect(" 加入收藏", "fa fa-heart-o", pid)
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			function getCollectS(pid){
+				$.ajax({
+					url: "/product/get_status",
+					type: "post",
+					data: {
+						"pid": pid
+					},
+					dataType: "json",
+					success: function (json)
+					{
+						let status = json.data
+						if (status === 1){
+							setCollect(" 已收藏", "fa fa-heart", pid)
+						}
+						else if (status === null || status === 0){
+							setCollect(" 加入收藏", "fa fa-heart-o", pid)
+						}
+						else{
+							setCollect(" 加入收藏", "fa fa-heart-o", pid)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+
+			function searchList(){
+				let keyWord = $.getUrlParam("keyWord") // 这里使用unescape返回中文会乱码，应该使用decodeURL
+				$.ajax({
+					url: "/product/search_product",
+					type: "post",
+					data: {
+						"keyWord": keyWord
+					},
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							let list = json.data
+							if(list.length > 0){
+								for (let i = 0; i < list.length; i++){
+									let hid = "heart" + list[i].pid.toString()
+									let ctid = "collect" + list[i].pid.toString()
+									let dv = '<div class="col-md-3">' +
+											'<div class="goods-panel">' +
+											'<img src="..#{image}collect.png" class="img-responsive" />' +
+											'<p>¥#{price}</p>' +
+											'<p class="text-row-3"><a href="product.html?id=#{pid}" style="cursor: pointer; color: #72ACE3"><small>#{title}</small></a></p>' +
+											'<span>' +
+											'<a class="btn btn-default btn-xs add-fav" onclick="setOpration(#{pid})" ><span id="#{hid}" class="fa fa-heart-o"></span><span id="#{ctid}"> 加入收藏</span></a>' +
+											'<a class="btn btn-default btn-xs add-cart" onclick="addToCart(#{pid})"><span class="fa fa-cart-arrow-down"></span> 加入购物车</a>' +
+											'</span>' +
+											'</div>'
+									dv = dv.replace(/#{image}/g, list[i].image)
+									dv = dv.replace(/#{hid}/g, hid)
+									dv = dv.replace(/#{ctid}/g, ctid)
+									dv = dv.replace(/#{pid}/g, list[i].pid)
+									dv = dv.replace(/#{price}/g, list[i].price)
+									dv = dv.replace(/#{title}/g, list[i].title)
+									$("#searchList").append(dv)
+									getCollectS(list[i].pid)
+								}
+
+							}
+						} else{
+							confirm(json.state + ": " + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

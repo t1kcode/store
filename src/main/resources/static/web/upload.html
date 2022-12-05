@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!--edge浏览器H5兼容设置-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!--360浏览器H5兼容设置-->
+		<meta name="renderer" content="webkit" />
+		<title>电脑商城</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--导入核心文件-->
+		<script src="../static/bootstrap3/js/holder.js"></script>
+		<link href="../static/bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<script src="../static/bootstrap3/jquery-1.9.1.min.js"></script>
+		<script src="../static/bootstrap3/js/bootstrap.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="../static/css/font-awesome1.min.css">
+		<link rel="stylesheet" type="text/css" href="../static/css/style.css">
+
+		<!-- 字体图标 -->
+		<link rel="stylesheet" href="../static/bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/top.css" />
+		<link rel="stylesheet" type="text/css" href="../static/css/footer.css" />
+		<script src="../static/js/error.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			$(function (){
+				$(".header").load("template/head.html")
+				$(".footer").load("template/footer.html")
+				$(".middleBar").load("template/middleBar.html")
+				$("#accordion").load("template/container.html")
+			})
+			// 每次重启都会创建一个新的临时目录，通过静态资源映射已解决
+			$(function () {
+				$.get('/api/user/info', function (json){
+					if(json.state === 200){
+						$("#img-avatar").prop("src", json.data.avatar)
+					} else{
+						confirm(json.state + ": " + json.message)
+					}
+				})
+			});
+
+		</script>
+	</head>
+
+	<body>
+		<!--头部-->
+		<header class="header"></header>
+		<!--导航 -->
+		<!--分割导航和顶部-->
+		<div class="middleBar"></div>
+		<!--头部结束-->
+		<!--导航结束-->
+		<div class="container">
+			<div class="col-md-2">
+				<!--左侧导航开始-->
+				<div class="panel-group" id="accordion">
+				</div>
+				<!--左侧导航结束-->
+			</div>
+			<div class="col-md-10	">
+				<div class="panel panel-default">
+					<ul class="nav nav-tabs">
+						<li><a href="password.html">修改密码</a></li>
+						<li><a href="userdata.html">个人资料</a></li>
+						<li class="active"><a href="#">上传头像</a></li>
+						<li><a href="address.html">收货管理</a></li>
+					</ul>
+					<div class="panel-body">
+						<!--上传头像表单开始-->
+						<form id="form-change-avatar" class="form-horizontal" role="form">
+							<div class="form-group">
+								<label class="col-md-2 control-label">选择头像:</label>
+								<div class="col-md-5">
+									<img alt="头像" width="200" height="200" id="img-avatar" src="../static/images/index/user.jpg" class="img-responsive"/>
+								</div>
+								<div class="clearfix"></div>
+								<div class="col-md-offset-2 col-md-4">
+									<input type="file" name="file">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-10">
+									<input id="btn-upload" type="button" class="btn btn-primary" value="上传" />
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--页脚开始-->
+		<div class="clearfix"></div>
+		<footer class="footer"></footer>
+		<!--页脚结束-->
+		<script type="text/javascript">
+			$("#btn-upload").click(function (){
+				$.ajax({
+					url: "/user/change_avatar",
+					type: "post",
+					data: new FormData($("#form-change-avatar")[0]), // 选择表单的第一个元素，通常用来传文件
+					processData: false, // 关闭默认以字符串处理数据
+					contentType: false, // 关闭默认以字符串发送数据
+					dataType: "json",
+					success: function (json) {
+						if(json.state === 200){
+							confirm("上传成功")
+							$("#img-avatar").attr("src", json.data)
+						} else{
+							confirm(json.state + ":" + json.message)
+						}
+					},
+					error: function (xhr){
+						error(xhr)
+					}
+				})
+			})
+		</script>
+	</body>
+
+</html>
