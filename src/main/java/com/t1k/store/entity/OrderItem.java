@@ -34,5 +34,4 @@ public class OrderItem extends BaseEntity implements Serializable
     private Long price;
     @ApiModelProperty(value = "商品数量")
     private Integer num;
-
 }

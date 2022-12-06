@@ -14,6 +14,7 @@ import com.t1k.store.service.ex.ProductNotFoundException;
 import com.t1k.store.service.ex.ServiceException;
 import com.t1k.store.service.ex.UpdateException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -73,7 +74,7 @@ public class CollectServiceImpl implements ICollectService
                .eq(Collect::getUid, uid)
                .ne(Collect::getStatus, 0);
         List<Collect> records = mapper.selectPage(iPage, wrapper).getRecords();
-        if(Objects.isNull(records)) throw new ProductNotFoundException("没有商品信息");
+        if(ObjectUtils.isEmpty(records)) throw new ProductNotFoundException("没有商品信息");
         return records;
     }
 

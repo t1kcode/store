@@ -122,7 +122,7 @@ public class ProductController extends BaseController
             @ApiImplicitParam(name = "status", value = "商品状态", required = true),
     })
     @PostMapping("cancel_collect")
-    public JsonResult<List<Collect>> cancelCollect(HttpSession session, Integer pid, Integer status)
+    public JsonResult<Void> cancelCollect(HttpSession session, Integer pid, Integer status)
     {
         Integer uid = getUidFromSession(session);
         String username = getUsernameFromSession(session);
