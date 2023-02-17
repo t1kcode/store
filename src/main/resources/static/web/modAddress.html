@@ -140,7 +140,7 @@
 				// let aid = sessionStorage.getItem("aid")
 				let aid = $.getUrlParam("aid") // 通过该函数从url地址中取得aid
 				$.ajax({
-					url: "/address/get_address",
+					url: "/user/address/get_address",
 					type: "post",
 					data: {
 						"aid": aid,
@@ -195,7 +195,7 @@
 
 			function getList(parent, ctrlId){
 				$.ajax({
-					url: "/districts",
+					url: "/user/districts",
 					type: "post",
 					data: {
 						"parent": parent
@@ -247,7 +247,7 @@
 
 			$("#btn-add-new-address").click(function (){
 				$.ajax({
-					url: "/address/mod_address",
+					url: "/user/address/mod_address",
 					type: "POST",
 					// serialize()需要标签有name字段
 					data: $("#form-add-new-address").serialize(),

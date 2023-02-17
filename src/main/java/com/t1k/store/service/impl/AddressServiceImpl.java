@@ -16,7 +16,6 @@ import org.springframework.util.ObjectUtils;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class AddressServiceImpl implements IAddressService
@@ -34,7 +33,7 @@ public class AddressServiceImpl implements IAddressService
     @Override
     public void addAddress(Integer uid, String username, Address address)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         LambdaQueryWrapper<Address> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Address::getUid, uid)
                .eq(Address::getUid, uid);
@@ -60,7 +59,7 @@ public class AddressServiceImpl implements IAddressService
     @Override
     public List<Address> getAddressList(Integer uid, String username)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         LambdaQueryWrapper<Address> wrapper = new LambdaQueryWrapper<>();
         //noinspection unchecked
         wrapper.select(Address::getName, Address::getAddress,
@@ -75,7 +74,7 @@ public class AddressServiceImpl implements IAddressService
     @Override
     public void setDefault(Integer aid, Integer uid, String username)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         Address address = mapper.selectById(aid);
         if(ObjectUtils.isEmpty(address)) throw new AddressNotFoundException("收获地址不存在");
         if(!address.getUid().equals(uid)) throw new AccessDeniedException("非法数据访问");
@@ -97,7 +96,7 @@ public class AddressServiceImpl implements IAddressService
     @Override
     public void delAddress(Integer aid, Integer uid, String username)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         Address address = mapper.selectById(aid);
         if(ObjectUtils.isEmpty(address)) throw new AddressNotFoundException("收获地址不存在");
         if(!address.getUid().equals(uid)) throw new AccessDeniedException("非法数据访问");
@@ -122,7 +121,7 @@ public class AddressServiceImpl implements IAddressService
     @Override
     public Address getAddress(Integer aid, Integer uid, String username)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         Address address = mapper.selectById(aid);
         if(ObjectUtils.isEmpty(address)) throw new AddressNotFoundException("收获地址不存在");
         if(!address.getUid().equals(uid)) throw new AccessDeniedException("非法数据访问");
@@ -132,7 +131,7 @@ public class AddressServiceImpl implements IAddressService
     @Override
     public void modAddress(Integer uid, String username, Address address)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         address.setModifiedUser(username);
         address.setModifiedTime(new Date());
         int row = mapper.updateById(address);

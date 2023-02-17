@@ -118,7 +118,7 @@
 
 			function showAddress(){
 				$.ajax({
-					url: "/address/get_addressList",
+					url: "/user/address/get_addressList",
 					type: "get",
 					dataType: "json",
 					success: function (json){
@@ -209,7 +209,7 @@
 
 			function showCarts(){
 				$.ajax({
-					url: "/cart/get_cartVOsByCids",
+					url: "/user/cart/get_cartVOsByCids",
 					type: "post",
 					data: {
 						"cids": JSON.stringify(params)
@@ -254,7 +254,7 @@
 
 			function createOrderByC(aid){
 				$.ajax({
-					url: "/order/create_orderByC",
+					url: "/user/order/create_orderByC",
 					type: "post",
 					data: {
 						"aid": aid,
@@ -277,7 +277,7 @@
 
 			function createOrderByP(aid){
 				$.ajax({
-					url: "/order/create_orderByP",
+					url: "/user/order/create_orderByP",
 					type: "post",
 					data: {
 						"aid": aid,
@@ -287,8 +287,8 @@
 					dataType: "json",
 					success: function (json){
 						if(json.state === 200){
-							let oid = json.data
-							location.href="payment.html?oid="+oid
+							sessionStorage.setItem("oid", json.data)
+							location.href="payment.html"
 						} else{
 							confirm(json.state + ": " + json.message)
 						}

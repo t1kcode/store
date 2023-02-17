@@ -45,6 +45,14 @@ public interface IOrderService
     List<OrderVO> getOrderVOs(Integer uid, String username);
 
     /**
+     * 获取订单数据列表
+     * @param uid 当前登录的用户id
+     * @param username 当前登录的用户名
+     * @return 订单数据列表
+     */
+    List<OrderVO> getOrders(Integer uid, String username);
+
+    /**
      * 根据订单状态获取订单信息
      * @param uid 当前登录的用户id
      * @param username 当前登录的用户名
@@ -79,4 +87,12 @@ public interface IOrderService
      * @return 订单信息
      */
     OrderVO getOrderInfo(Integer uid, String username, Integer oid);
+
+    /**
+     * 获取订单数量
+     * @param uid 当前登录的用户id
+     * @param username 当前登录的用户名
+     * @return 订单数量
+     */
+    Integer getOCount(Integer uid, String username);
 }

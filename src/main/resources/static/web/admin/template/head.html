@@ -1,0 +1,91 @@
+<!--电脑商城logo-->
+<div class="row">
+    <div class="col-md-3">
+        <a href="/web/admin/index.html">
+            <img src="../../../static/images/index/stumalllogo.png" />
+        </a>
+    </div>
+    <!--快捷选项-->
+    <div class="col-md-9 top-item">
+        <ul class="list-inline pull-right">
+            <li>
+                <button id="top-product" type="button" class="btn btn-link dropdown-toggle">
+                    <a href="../admin/index.html" style="cursor: pointer; color: #72ACE3"><span class="fa fa-heart1"></span>&nbsp;商品管理</a>
+                </button>
+            </li>
+            <li class="li-split">|</li>
+            <li>
+                <button id="top-order" type="button" class="btn btn-link dropdown-toggle">
+                    <a href="../admin/order.html" style="cursor: pointer; color: #72ACE3"><span class="fa fa-file-text"></span>&nbsp;订单管理</a>
+                </button>
+            </li>
+            <li class="li-split">|</li>
+            <li>
+                <button id="top-user" type="button" class="btn btn-link dropdown-toggle">
+                    <a href="../admin/user.html" style="cursor: pointer; color: #72ACE3"><span class="fa fa-cart-plus"></span>&nbsp;用户管理</a>
+                </button>
+            </li>
+            <li>
+                <div class="header-controls">
+                    <div class="user-info-wrapper header-links">
+                        <a href="login.html" class="user-info"><img id="avatar" src="../../../static/images/index/user.jpg" alt="头像" class="user-img"></a>
+                        <div class="user-info-box">
+                            <div class="drop-down-header">
+                                <h4 id="username" style="color: white"></h4>
+                                <p></p>
+                            </div>
+                            <ul><li id="logout"></li></ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function (){
+        getInfo()
+    })
+    function logout(){
+        $.ajax({
+            url: "/api/auth/logout",
+            type: "get",
+            dataType: "json",
+            success: function (json){
+                if(json.state === 200){
+                    location.href = "/web/login.html"
+                } else{
+                    confirm(json.state + ": " + json.message)
+                }
+            },
+            error: function (xhr){
+                error(xhr)
+            }
+        })
+    }
+
+    function getInfo(){
+        $.ajax({
+            url: "/api/user/info",
+            type: "get",
+            dataType: "json",
+            success: function (json) {
+                let logout = $("#logout")
+                if(json.state === 200){
+                    $("#username").html(json.data.username)
+                    $("#avatar").prop("src", json.data.avatar)
+                    logout.html('<a style="cursor: pointer; color: #72ACE3" onclick="logout()"><i class="fas1 fa-sign-out-alt"></i> 退出登录</a>')
+                } else{
+                    logout.html('<a style="cursor: pointer; color: #72ACE3" href="login.html"><i class="fas1 fa-user"></i> 未登录</a>')
+                    $("#top-product").attr("disabled", true)
+                    $("#top-order").attr("disabled", true)
+                    $("#top-user").attr("disabled", true)
+                }
+            },
+            error: function (xhr){
+                error(xhr)
+            }
+        })
+    }
+</script>

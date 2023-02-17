@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/alipay")
+@RequestMapping("/user/alipay")
 @Api(tags = "支付宝沙盒相关接口描述")
 public class AlipayController extends BaseController
 {

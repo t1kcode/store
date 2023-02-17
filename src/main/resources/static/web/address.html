@@ -88,7 +88,7 @@
 			function showAddressList(){
 				$("#address-list").empty()
 				$.ajax({
-					url: "/address/get_addressList",
+					url: "/user/address/get_addressList",
 					type: "get",
 					dataType: "JSON",
 					success: function (json){
@@ -128,7 +128,7 @@
 
 			function setDefault(aid) {
 				$.ajax({
-					url: "/address/set_default",
+					url: "/user/address/set_default",
 					type: "post",
 					data: {
 						"aid": aid,
@@ -151,7 +151,7 @@
 			function delAddress(aid) {
 				if(confirm("确定要删除这个地址吗？")){
 					$.ajax({
-						url: "/address/del_address",
+						url: "/user/address/del_address",
 						type: "post",
 						data: {
 							"aid": aid,

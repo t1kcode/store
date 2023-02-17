@@ -33,5 +33,7 @@ public class User extends BaseEntity implements Serializable
     private Integer gender;
     @ApiModelProperty(value = "头像")
     private String avatar;
+    @ApiModelProperty(value = "权限：0-普通用户，1-管理员")
+    private Integer role;
 }
 

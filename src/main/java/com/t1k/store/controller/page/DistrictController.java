@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
-@RequestMapping("/districts")
+@RequestMapping("/user/districts")
 @Api(tags = "城市名称相关接口描述")
 public class DistrictController extends BaseController
 {

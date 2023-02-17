@@ -40,15 +40,15 @@
 			})
 
 			$(function (){
-				let url = "/order/get_orderVOs"
+				let url = "/user/order/get_orderVOs"
 				let status = $.getUrlParam("status")
 				if(status !== null && status !== ""){
 					if(status === "0" || status === "1"){
-						url = "/order/get_orderVOsByS"
+						url = "/user/order/get_orderVOsByS"
 					} else{
 						let res = [2, 3, 4]
 						status = JSON.stringify(res)
-						url = "/order/get_orderVOsByS"
+						url = "/user/order/get_orderVOsByS"
 					}
 				}
 				showList(url, status)
@@ -107,7 +107,7 @@
 			function delOrder(oid){
 				if(confirm("确定要删除该订单吗？")){
 					$.ajax({
-						url: "/order/del_order",
+						url: "/user/order/del_order",
 						type: "post",
 						data: {
 							"oid": oid
@@ -115,7 +115,7 @@
 						dataType: "json",
 						success: function (json){
 							if(json.state === 200){
-								let url = "/order/get_orderVOs"
+								let url = "/user/order/get_orderVOs"
 								showList(url)
 							} else{
 								confirm(json.state + ": " + json.message)
@@ -143,7 +143,7 @@
 			// 确认收货
 			function receipt(oid){
 				$.ajax({
-					url: "/order/receipt",
+					url: "/user/order/receipt",
 					type: "post",
 					data: {
 						"oid": oid,
@@ -152,7 +152,7 @@
 					dataType: "json",
 					success: function (json){
 						if(json.state === 200){
-							let url =  "/order/get_orderVOs"
+							let url =  "/user/order/get_orderVOs"
 							showList(url)
 						} else{
 							confirm(json.state + ": " + json.message)

@@ -32,7 +32,7 @@ public class CartServiceImpl implements ICartService
     public Integer addToCart(Integer uid, String username, Integer pid, Integer amount)
     {
         Integer cid;
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         LambdaQueryWrapper<Cart> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Cart::getUid, uid)
                .eq(Cart::getPid, pid);
@@ -74,7 +74,7 @@ public class CartServiceImpl implements ICartService
     @Override
     public List<CartVO> getCartVOs(Integer uid, String username)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         List<CartVO> cartVOs = mapper.getCartVOs(uid);
         if(ObjectUtils.isEmpty(cartVOs)) throw new CartNotFoundException("没有购物车数据");
         return cartVOs;
@@ -83,7 +83,7 @@ public class CartServiceImpl implements ICartService
     @Override
     public void delCart(Integer uid, String username, Integer cid)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         LambdaQueryWrapper<Cart> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Cart::getCid, cid);
         int row = mapper.delete(wrapper);
@@ -94,7 +94,7 @@ public class CartServiceImpl implements ICartService
     public void selDelCart(Integer uid, String username, List<Integer> cids)
     {
         if(ObjectUtils.isEmpty(cids)) throw new ServiceException("参数错误");
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         final int row = mapper.selDelCart(uid, cids);
         if(row < 1) throw new CartNotFoundException("没有购物车数据");
     }
@@ -102,7 +102,7 @@ public class CartServiceImpl implements ICartService
     @Override
     public void changeCartNum(Integer uid, String username, Integer cid, Integer num)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         LambdaUpdateWrapper<Cart> wrapper = new LambdaUpdateWrapper<>();
         wrapper.set(Cart::getNum, num);
         wrapper.eq(Cart::getCid, cid);
@@ -114,7 +114,7 @@ public class CartServiceImpl implements ICartService
     public List<CartVO> getCartVOsByCids(Integer uid, String username, List<Integer> cids)
     {
         if(ObjectUtils.isEmpty(cids)) throw new ServiceException("参数错误");
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         List<CartVO> list = mapper.getCartVOsByCid(cids);
         if(ObjectUtils.isEmpty(list)) throw new CartNotFoundException("没有购物车数据");
         list.forEach(cartVO -> {

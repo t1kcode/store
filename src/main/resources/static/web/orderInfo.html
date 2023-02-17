@@ -166,7 +166,7 @@
 			function getOrderVO(){
 				let oid = $.getUrlParam("oid")
 				$.ajax({
-					url: "/order/get_orderVO",
+					url: "/user/order/get_orderVO",
 					type: "post",
 					data: {
 						"oid": oid
@@ -183,7 +183,7 @@
 									'</div>' +
 									'<ol class="order-flow">' +
 									'<li class="order-success">1.提交订单 <small>#{createTime}</small> <span class="fa fa-check-circle"></span></li>' +
-									'<li class="order-success">2.付款成功 <small>#{payTime}</small> <span class="fa fa-check-circle"></span></li>' +
+									'2.付款成功' +
 									'#{mall}' +
 									'<li>4.用户收货</li>' +
 									'<li>5.购物评价</li>' +
@@ -234,7 +234,7 @@
 							let orderTime = getDate(orderVO.orderTime)
 							dv = dv.replace(/#{createTime}/g, orderTime)
 							let payTime = getDate(orderVO.orderTime)
-							dv = dv.replace(/#{payTime}/g, payTime)
+							// dv = dv.replace(/#{payTime}/g, payTime)
 							let sendTime = setTime(orderVO.orderTime, "sendTime")
 							dv = dv.replace(/#{sendTime}/g, sendTime)
 							dv = dv.replace(/#{name}/g, orderVO.recvName)

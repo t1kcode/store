@@ -18,7 +18,7 @@ import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("/user/cart")
 @Api(tags = "购物车接口相关描述")
 public class CartController extends BaseController
 {
@@ -46,7 +46,6 @@ public class CartController extends BaseController
     {
         String username = getUsernameFromSession(session);
         Integer uid = getUidFromSession(session);
-        service.addToCart(uid, username, pid, amount);
         return new JsonResult<>(OK, service.addToCart(uid, username, pid, amount));
     }
 

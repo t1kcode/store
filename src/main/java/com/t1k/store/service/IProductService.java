@@ -38,4 +38,39 @@ public interface IProductService
      * @return 符合关键字的商品列表
      */
     List<Collect> searchProducts(Integer uid, String username, String keyWord);
+
+    /**
+     * 获取商品列表
+     * @param page 当前分页的信息，包含页码和每页数据条数
+     * @param uid 当前登录的用户id
+     * @param username 当前登录的用户名
+     * @return 商品列表
+     */
+    List<Product> getProducts(IPage<Product> page, Integer uid, String username);
+
+    /**
+     * 获取商品状态
+     * @param uid 当前登录的用户id
+     * @param username 当前登录的用户名
+     * @param pid 商品id
+     * @return 商品状态
+     */
+    Integer getStatus(Integer uid, String username, Integer pid);
+
+    /**
+     * 设置商品状态
+     * @param uid 当前登录的用户id
+     * @param username 当前登录的用户名
+     * @param pid 商品id
+     * @param status 商品状态
+     */
+    void setStatus(Integer uid, String username, Integer pid, Integer status);
+
+    /**
+     * 获取商品数量
+     * @param uid 当前登录的用户id
+     * @param username 当前登录的用户名
+     * @return 商品数量
+     */
+    Integer getPCount(Integer uid, String username);
 }

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!--edge浏览器H5兼容设置-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!--360浏览器H5兼容设置-->
+		<meta name="renderer" content="webkit" />
+		<title>电脑商城</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!--导入核心文件-->
+		<script src="../../../static/bootstrap3/js/holder.js"></script>
+		<link href="../../../static/bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+
+		<link rel="stylesheet" type="text/css" href="../../../static/css/font-awesome1.min.css">
+		<link rel="stylesheet" type="text/css" href="../../../static/css/style.css">
+		<link rel="stylesheet" type="text/css" href="../../../static/css/product.css">
+
+		<link rel="stylesheet" href="../../../static/css/layui.css">
+		<script src="../../../static/js/layui.js"></script>
+		<script src="../../../static/js/laypage.js"></script>
+
+		<script src="../../../static/bootstrap3/jquery-1.8.3.min.js"></script>
+		<script src="../../../static/bootstrap3/js/bootstrap.js"></script>
+		<script src="../../../static/js/menu.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 字体图标 -->
+		<link rel="stylesheet" href="../../../static/bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+		<link rel="stylesheet" type="text/css" href="../../../static/css/layout.css" />
+		<link rel="stylesheet" type="text/css" href="../../../static/css/webindex.css" />
+		<link rel="stylesheet" type="text/css" href="../../../static/css/footer.css" />
+		<link rel="stylesheet" type="text/css" href="../../../static/css/top.css" />
+		<script src="../../../static/js/error.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			// 是$(document).ready(function (){})的简写
+			$(function (){
+				$(".header").load("/web/admin/template/head.html")
+				$(".footer").load("/web/admin/template/footer.html")
+			})
+		</script>
+	</head>
+
+	<body>
+		<!--头部-->
+		<header class="header"></header>
+		<!--头部结束-->
+		<div class="container">
+			<div class="col-md-offset-1 col-md-10"></div>
+			<div>
+				<div id="collectList" class="col-md-offset-1 col-md-10">
+					<!--		待填充内容		-->
+				</div>
+				<div class="text-center pt-2" id="bar-pages"></div>
+			</div>
+		</div>
+
+
+<!--		<div class="col-md-10" id="product-list"></div>-->
+
+		<!--页脚开始-->
+		<div class="footer"></div>
+		<!--页脚结束-->
+		<script type="text/javascript">
+			let page = 1 // 设置首页页码
+			let limit = 8 // 每页的数据条数
+			let size = getCount() // 总条数
+
+			$(function (){
+				order()
+				if(size >= limit){
+					paging()
+				}
+			})
+
+			function getCount(){
+				let size = 0
+				$.ajax({
+					async: false,
+					url: "/admin/get_oCount",
+					type: "get",
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							size = json.data
+						}
+					}
+				})
+				return size
+			}
+
+			function oStatus(status){
+				let ans = "已删除"
+				if(status === "0" || status === 0){
+					ans = "未支付"
+				} else if (status === "1" || status === 1){
+					ans = "已支付"
+				} else if (status === "2" || status === 2){
+					ans = "已取消"
+				} else if (status === "3" || status === 3){
+					ans = "已关闭"
+				} else if (status === "4" || status === 4){
+					ans = "已完成"
+				}
+				return ans
+			}
+
+			function oControlStatus(status){
+				let ans = ""
+				if (status === "1" || status === 1){
+					ans = "发货"
+				}
+				return ans
+			}
+
+			function order(){
+				let element =
+						'<div class="panel panel-default">' +
+						'<div class="panel-heading">' +
+						'</div>' +
+						'<div class="panel-body">' +
+						'<table class="orders-table" width="100%">' +
+						'<thead>' +
+						'<tr>' +
+						'<th width="15%">订单号</th>' +
+						'<th width="10%">下单时间</th>' +
+						'<th width="8%">收货人</th>' +
+						'<th width="30%">收货地址</th>' +
+						'<th width="10%">总价</th>' +
+						'<th width="8%">订单状态</th>' +
+						'<th width="8%">操作</th>' +
+						'</tr>' +
+						'</thead>' +
+						'<tbody class="orders-body" id="ptb">' +
+						'</tbody>' +
+						'</table>' +
+						'<table class="orders-table">' +
+						'<tbody class="orders-body">' +
+						'</table>' +
+						'</div>' +
+						'</div>'
+				$("#collectList").append(element)
+
+				$.ajax({
+					url: "/admin/get_orderVOs",
+					type: "get",
+					dataType: "json",
+					success: function (json){
+						if(json.state === 200){
+							let list = json.data
+							if(list.length > 0){
+								for (let i = 0; i < list.length; i++){
+									let tr = '<tr>' +
+											'<td><label style="color: red">#{oid}</label></td>' +
+											'<td>#{orderTime}</td>' +
+											'<td>#{recvName}</td>' +
+											'<td>#{provinceName}#{cityName}#{areaName}#{address}</td>' +
+											'<td>¥<span>#{totalPrice}</span></td>' +
+											'<td>#{status}</td>' +
+											'<td><div>' +
+											'<a id=#{aid} style="cursor: pointer; color: #72ace3;" onclick="oClick(#{id})">#{str}</a>' +
+											'</div></td>' +
+											'</tr>'
+
+									tr = tr.replace(/#{oid}/g, "11010003"+list[i].oid)
+									tr = tr.replace(/#{orderTime}/g, list[i].orderTime)
+									tr = tr.replace(/#{recvName}/g, list[i].recvName)
+									tr = tr.replace(/#{provinceName}/g, list[i].provinceName)
+									tr = tr.replace(/#{cityName}/g, list[i].cityName)
+									tr = tr.replace(/#{areaName}/g, list[i].areaName)
+									tr = tr.replace(/#{address}/g, list[i].address)
+									tr = tr.replace(/#{totalPrice}/g, list[i].totalPrice)
+									tr = tr.replace(/#{status}/g, oStatus(list[i].status))
+									tr = tr.replace(/#{str}/g, oControlStatus(list[i].status))
+									tr = tr.replace(/#{aid}/g, "a"+list[i].oid)
+									tr = tr.replace(/#{id}/g, list[i].oid)
+									$("#ptb").append(tr)
+								}
+							}
+						}
+					}
+				})
+			}
+
+			function setStatus(pid, status){
+				$.ajax({
+					url: "/product/set_s",
+					type: "post",
+					data: {
+						pid: pid,
+						status: status
+					}
+				})
+			}
+
+			function oClick(id){
+				if(confirm("请确认发货")){
+					$("#a"+id).html("已发货")
+				}
+			}
+
+			function paging(){
+				layui.use('laypage', function (){
+					let laypage = layui.laypage
+					laypage.render({
+						elem: 'bar-pages',
+						count: size,
+						limit: limit,
+						jump: function (obj, first) {
+							// obj包含了当前分页的所有参数, 比如
+							page = obj.curr // 改变当前页码
+							limit = obj.limit
+							if(!first){
+								$("#collectList").empty()
+								order() // 首次不执行
+							}
+						}
+					})
+				})
+			}
+
+		</script>
+	</body>
+</html>

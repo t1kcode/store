@@ -2,6 +2,8 @@ package com.t1k.store.service;
 
 import com.t1k.store.entity.User;
 
+import java.util.List;
+
 /** 处理用户数据的业务层接口 */
 public interface IUserService
 {
@@ -55,7 +57,7 @@ public interface IUserService
      * @param uid 当前登录的用户id
      * @param username 当前登录的用户名
      */
-    void JudgeUser(Integer uid, String username);
+    void judgeUser(Integer uid, String username);
 
     /**
      * 判断密码是否相同
@@ -63,5 +65,26 @@ public interface IUserService
      * @param password1 原密码
      * @param password2 新密码
      */
-    void JudgePassword(Integer uid, String password1, String password2);
+    void judgePassword(Integer uid, String password1, String password2);
+
+    /**
+     * 删除用户
+     * @param uid 用户id
+     * @param username 用户名
+     */
+    void deleteUser(Integer uid, String username);
+
+    /**
+     * 获取所有用户
+     * @param uid 用户id
+     * @param username 用户名
+     */
+    List<User> getUsers(Integer uid, String username);
+
+    /**
+     * 获取所有用户数量
+     * @param uid 用户id
+     * @param username 用户名
+     */
+    Integer getUCount(Integer uid, String username);
 }

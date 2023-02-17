@@ -45,6 +45,17 @@ public class BaseController
         return session.getAttribute("avatar").toString();
     }
 
+    /**
+     * 从HttpSession对象中获取权限
+     * @param session HttpSession对象
+     * @return 当前登录的用户名
+     */
+    protected final Integer getRoleFromSession(HttpSession session)
+    {
+        if(Objects.isNull(session.getAttribute("role"))) throw new SessionEmptyException("用户未登录");
+        return Integer.valueOf(session.getAttribute("role").toString());
+    }
+
     @ExceptionHandler({ServiceException.class, FileUploadException.class, SessionEmptyException.class, CodeNotMatchException.class})
     public JsonResult<Void> handleException(Throwable e)
     {

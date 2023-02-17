@@ -64,6 +64,7 @@
     $(function (){
         judgeRemember()
     })
+
     function logout(){
         $.ajax({
             url: "/api/auth/logout",
@@ -87,24 +88,6 @@
         getInfo()
     }
 
-    function getCookie(name) {
-        // 拆分 cookie 字符串
-        let cookieArr = document.cookie.split(";");
-        alert(cookieArr)
-
-        // 循环遍历数组元素
-        for(let i = 0; i < cookieArr.length; i++) {
-            let cookiePair = cookieArr[i].split("=");
-            /* 删除 cookie 名称开头的空白并将其与给定字符串进行比较 */
-            if(name === cookiePair[0].trim()) {
-                // 解码cookie值并返回
-                return decodeURIComponent(cookiePair[1]);
-            }
-        }
-        // 如果未找到，则返回null
-        return null;
-    }
-
     function getInfo(){
         $.ajax({
             url: "/api/user/info",
@@ -113,9 +96,13 @@
             success: function (json) {
                 let logout = $("#logout")
                 if(json.state === 200){
-                    $("#username").html(json.data.username)
-                    $("#avatar").prop("src", json.data.avatar)
-                    logout.html('<a style="cursor: pointer; color: #72ACE3" onclick="logout()"><i class="fas1 fa-sign-out-alt"></i> 退出登录</a>')
+                    if(json.data.role === 1){
+                        location.href ="/web/admin/index.html"
+                    } else{
+                        $("#username").html(json.data.username)
+                        $("#avatar").prop("src", json.data.avatar)
+                        logout.html('<a style="cursor: pointer; color: #72ACE3" onclick="logout()"><i class="fas1 fa-sign-out-alt"></i> 退出登录</a>')
+                    }
                 } else{
                     logout.html('<a style="cursor: pointer; color: #72ACE3" href="login.html"><i class="fas1 fa-user"></i> 未登录</a>')
                     $("#top-dropdown").attr("disabled", true)

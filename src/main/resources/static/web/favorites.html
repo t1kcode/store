@@ -87,7 +87,7 @@
 			function addToCart(pid){
 				let num = 1
 				$.ajax({
-					url: "/cart/add_to_cart",
+					url: "/user/cart/add_to_cart",
 					type: "post",
 					data: {
 						"id": pid,
@@ -112,7 +112,6 @@
 			function cancelCollect(pid){
 				if(cnt === 1){  // 判断当前页中是否还有最后一个元素
 					let curr = parseInt($(".layui-laypage-curr em:last-child").text())
-					alert("curr = " + curr)
 					page = curr - 1
 				}
 				$.ajax({
@@ -125,7 +124,8 @@
 					dataType: "json",
 					success: function (json){
 						if(json.state === 200){
-							$("#collectList").empty()
+							$("#collectList").empty() // 取消收藏之后刷新
+							// document.getElementById("d"+pid).style.display="none"
 							flag = true
 							setTotal()
 							collectList()
@@ -158,7 +158,7 @@
 							if(list.length > 0){
 								cnt = list.length
 								for (let i = 0; i < list.length; i++){
-									let dv = '<div class="col-md-3">' +
+									let dv = '<div id=#{did} class="col-md-3">' +
 											'<div class="goods-panel">' +
 											'<img src="..#{image}collect.png" class="img-responsive"/>' +
 											'<p>￥#{price}</p>' +
@@ -177,6 +177,7 @@
 									dv = dv.replace(/#{image}/g, list[i].image)
 									dv = dv.replace(/#{title}/g, list[i].title)
 									dv = dv.replace(/#{pid}/g, list[i].pid)
+									dv = dv.replace(/#{did}/g, "d"+list[i].pid)
 									$("#collectList").append(dv)
 								}
 							} else{

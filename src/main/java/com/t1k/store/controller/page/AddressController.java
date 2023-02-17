@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
-@RequestMapping("/address")
+@RequestMapping("/user/address")
 @Api(tags = "收货地址接口相关描述")
 public class AddressController extends BaseController
 {

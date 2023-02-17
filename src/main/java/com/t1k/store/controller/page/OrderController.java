@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-@RequestMapping("/order")
+@RequestMapping("/user/order")
 @RestController
 @Api(tags = "订单相关接口描述")
 public class OrderController extends BaseController
@@ -84,7 +84,7 @@ public class OrderController extends BaseController
         return new JsonResult<>(OK);
     }
 
-    @ApiOperation(value = "获取订单列表", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;用于用户获取订单列表，返回List<OrderVO>")
+    @ApiOperation(value = "用户获取订单列表", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;用于用户获取订单列表，返回List<OrderVO>")
     @ApiResponses({
             @ApiResponse(code = 200, message = "请求成功"),
             @ApiResponse(code = 5001, message = "用户不存在"),

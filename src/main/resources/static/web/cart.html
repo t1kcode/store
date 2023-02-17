@@ -96,7 +96,7 @@
 
 			function showCarts(){
 				$.ajax({
-					url: "/cart/get_cartVOs",
+					url: "/user/cart/get_cartVOs",
 					type: "get",
 					dataType: "json",
 					success: function (json){
@@ -198,7 +198,7 @@
 
 			function changeNum(cid, num){
 				$.ajax({
-					url: "/cart/change_cartNum",
+					url: "/user/cart/change_cartNum",
 					type: "post",
 					data: {
 						"cid": cid,
@@ -284,7 +284,7 @@
 			function delCart(cid){
 				if(confirm("确定要删除该商品吗？")){
 					$.ajax({
-						url: "/cart/del_cart",
+						url: "/user/cart/del_cart",
 						type: "post",
 						data: {
 							"cid": cid,
@@ -309,7 +309,7 @@
 					cids = JSON.stringify(cids) // 将数组转换为字符串返回
 					if (confirm("确定要删除所选商品吗？")){
 						$.ajax({
-							url: "/cart/sel_del_cart",
+							url: "/user/cart/sel_del_cart",
 							type: "post",
 							data: {
 								"cids": cids

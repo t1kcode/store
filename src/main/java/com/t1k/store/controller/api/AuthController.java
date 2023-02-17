@@ -7,7 +7,6 @@ import com.t1k.store.controller.ex.SessionEmptyException;
 import com.t1k.store.entity.JsonResult;
 import com.t1k.store.entity.User;
 import com.t1k.store.service.IUserService;
-import com.t1k.store.service.ex.PasswordNotMatchException;
 import io.swagger.annotations.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -40,8 +39,8 @@ public class AuthController extends BaseController
     }
 
     @ApiOperation(value = "用户登录", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;用于用户登录")
-    @PostMapping("login")
-    public void login(){}
+    @RequestMapping(value = "login", method = {RequestMethod.GET, RequestMethod.POST})
+    public void login() {}
 
     @ApiOperation(value = "登录成功", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;表示登录成功，并将用户信息插入session中")
     @ApiResponses({
@@ -56,6 +55,7 @@ public class AuthController extends BaseController
         session.setAttribute("username", user.getUsername());
         session.setAttribute("uid", user.getUid());
         session.setAttribute("avatar", user.getAvatar());
+        session.setAttribute("role", user.getRole());
         return new JsonResult<>(OK);
     }
 
@@ -83,12 +83,13 @@ public class AuthController extends BaseController
     @ApiResponses({
             @ApiResponse(code = 200, message = "请求成功"),
     })
-    @GetMapping("logout")
+    @RequestMapping(value = "logout", method = {RequestMethod.GET, RequestMethod.POST})
     public JsonResult<Void> logout(@ApiParam(hidden = true) HttpSession session)
     {
-        session.setAttribute("username", null);
-        session.setAttribute("uid", null);
-        session.setAttribute("avatar", null);
+        session.removeAttribute("username");
+        session.removeAttribute("uid");
+        session.removeAttribute("avatar");
+        session.removeAttribute("role");
         return new JsonResult<>(OK);
     }
 
@@ -146,7 +147,7 @@ public class AuthController extends BaseController
     public JsonResult<Void> judgePassword(@ApiParam(hidden = true) HttpSession session, String password)
     {
         Integer uid = getUidFromSession(session);
-        userService.JudgePassword(uid, password, null);
+        userService.judgePassword(uid, password, null);
         return new JsonResult<>(OK);
     }
 }

@@ -109,7 +109,7 @@ public class ProductController extends BaseController
         List<Collect> collects = collectService.getCollects(iPage, uid, username);
         return new JsonResult<>(OK, collects);
     }
-
+    
     @ApiOperation(value = "取消收藏", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;用于用户取消收藏")
     @ApiResponses({
             @ApiResponse(code = 200, message = "请求成功"),
@@ -143,7 +143,7 @@ public class ProductController extends BaseController
         return new JsonResult<>(OK, collectService.getCount(uid, username));
     }
 
-    @ApiOperation(value = "获取收藏商品状态", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;用于用户收藏商品状态")
+    @ApiOperation(value = "获取收藏商品状态", notes = "<span style='color:red;'>描述:</span>&nbsp;&nbsp;用于用户获取收藏商品状态")
     @ApiResponses({
             @ApiResponse(code = 200, message = "请求成功"),
             @ApiResponse(code = 8000, message = "用户未登录")
@@ -163,7 +163,7 @@ public class ProductController extends BaseController
     })
     @ApiImplicitParam(name = "keyWord", value = "关键词", required = true)
     @PostMapping("search_product")
-    public JsonResult<List<Collect>> searchProduce(HttpSession session, String keyWord)
+    public JsonResult<List<Collect>> searchProduct(HttpSession session, String keyWord)
     {
         Integer uid = -1;
         String username = "-1";

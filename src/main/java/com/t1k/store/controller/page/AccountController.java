@@ -30,6 +30,7 @@ public class AccountController extends BaseController
         user.setUid(getUidFromSession(session));
         user.setUsername(getUsernameFromSession(session));
         user.setAvatar(getAvatarFromSession(session));
+        user.setRole(getRoleFromSession(session));
         // 因为没有默认头像，所以用户再没有设置头像之前请求头像都会抛出异常，前端会显示用户未登录
         // 解决办法给每位用户设置一个默认头像
         return new JsonResult<>(OK, user);

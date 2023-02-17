@@ -2,7 +2,6 @@ package com.t1k.store.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.t1k.store.entity.User;
 import com.t1k.store.mapper.UserMapper;
 import com.t1k.store.service.IUserService;
@@ -10,11 +9,11 @@ import com.t1k.store.service.ex.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Objects;
+import java.util.List;
 
 /** 处理用户数据的业务层实现类 */
 @Service
@@ -54,7 +53,7 @@ public class UserServiceImpl implements IUserService
         else
         {
             // 校验原密码是否一致
-            JudgePassword(uid, oldPassword, user.getPassword());
+            judgePassword(uid, oldPassword, user.getPassword());
             LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
             wrapper.eq(User::getUid, uid)
                    .set(User::getPassword, encoder.encode(newPassword));
@@ -84,7 +83,7 @@ public class UserServiceImpl implements IUserService
     @Override
     public void changeInfo(Integer uid, String username, User user)
     {
-        JudgeUser(uid, username);
+        judgeUser(uid, username);
         user.setUid(uid);
         user.setCreatedUser(user.getUsername());
         user.setModifiedUser(user.getUsername());
@@ -98,7 +97,7 @@ public class UserServiceImpl implements IUserService
     @Override
     public void changeAvatar(Integer uid, String username, String avatar)
     {
-        JudgeUser(uid, username);
+        judgeUser(uid, username);
         LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(User::getUid, uid)
                .set(User::getAvatar, avatar);
@@ -107,7 +106,7 @@ public class UserServiceImpl implements IUserService
     }
 
     @Override
-    public void JudgeUser(Integer uid, String username)
+    public void judgeUser(Integer uid, String username)
     {
         final LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUid, uid)
@@ -116,7 +115,7 @@ public class UserServiceImpl implements IUserService
     }
 
     @Override
-    public void JudgePassword(Integer uid, String password1, String password2)
+    public void judgePassword(Integer uid, String password1, String password2)
     {
         if(ObjectUtils.isEmpty(password2)){
             LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
@@ -129,5 +128,37 @@ public class UserServiceImpl implements IUserService
         {
             if(!encoder.matches(password1, password2)) throw new PasswordNotMatchException("密码不匹配");
         }
+    }
+
+    @Override
+    public void deleteUser(Integer uid, String username)
+    {
+        // address cart collect order_item order_user user
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+
+        userMapper.delete(wrapper);
+    }
+
+    @Override
+    public List<User> getUsers(Integer uid, String username)
+    {
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUid, uid)
+               .eq(User::getUsername, username);
+        User user = userMapper.selectOne(wrapper);
+        if(ObjectUtils.isEmpty(user)) throw new UserNotFoundException("该用户不存在");
+        List<User> users = new ArrayList<>();
+        if(user.getRole() == 1)
+        {
+            users = userMapper.selectList(null);
+        }
+        return users;
+    }
+
+    @Override
+    public Integer getUCount(Integer uid, String username)
+    {
+        judgeUser(uid, username);
+        return userMapper.selectCount(null);
     }
 }

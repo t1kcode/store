@@ -27,11 +27,13 @@ public class AuthService implements UserDetailsService
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUsername, username);
         User user = userMapper.selectOne(wrapper);
+        String role = "user";
+        if(user.getRole().equals(1)) role = "admin";
         if(ObjectUtils.isEmpty(user)) throw new UsernameNotFoundException("该用户不存在");
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
                 .password(user.getPassword())
-                .roles("user")
+                .roles(role)
                 .build();
     }
 }

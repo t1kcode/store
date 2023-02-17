@@ -104,7 +104,7 @@
 						</div>
 						<div class="col-md-12 form-space">
 							<button id="btn-add-to-cart" type="button" class="btn btn-default"><span class="fa fa-cart-plus"></span> 加入购物车</button>
-							<button id="btn-add-to-collect" type="button" class="btn btn-default"><span class="fa fa-heart" id="heart"></span><span id="collect"> 已收藏</span></button>
+							<button id="btn-add-to-collect" type="button" class="btn btn-default"><span class="fa fa-heart-o" id="heart"></span><span id="collect"> 加入收藏</span></button>
 						</div>
 					</form>
 				</div>
@@ -237,9 +237,6 @@
 						else if (status === null || status === 0){
 							setCollect(" 加入收藏", "fa fa-heart-o")
 						}
-						else{
-							confirm(json.state + ": " + json.message)
-						}
 					},
 					error: function (xhr){
 						error(xhr)
@@ -257,7 +254,7 @@
 			$("#btn-add-to-cart").click(function (){
 				let num = $("#num").val()
 				$.ajax({
-					url: "/cart/add_to_cart",
+					url: "/user/cart/add_to_cart",
 					type: "post",
 					data: {
 						"id": pid,

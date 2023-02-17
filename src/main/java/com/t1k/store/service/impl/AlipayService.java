@@ -58,22 +58,16 @@ public class AlipayService
 //        request.setBizContent(JSON.toJSONString(0));
         AlipayTradePagePayResponse response = null;
         String from = null;
-        try
-        {
+        try{
             response = alipayClient.pageExecute(request);
             from = response.getBody();
-        }
-        catch(AlipayApiException e)
-        {
+        } catch(AlipayApiException e){
             e.printStackTrace();
         }
         assert response != null;
-        if(response.isSuccess())
-        {
+        if(response.isSuccess()) {
             System.out.println("调用成功");
-        }
-        else
-        {
+        } else {
             System.out.println("调用失败");
         }
         return from;

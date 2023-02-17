@@ -2,7 +2,6 @@ package com.t1k.store.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.t1k.store.entity.Address;
 import com.t1k.store.entity.Order;
@@ -27,7 +26,6 @@ import org.springframework.util.ObjectUtils;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class OrderServiceImpl implements IOrderService
@@ -162,7 +160,7 @@ public class OrderServiceImpl implements IOrderService
     @Override
     public void deleteOrder(Integer uid, String username, Integer oid)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Order::getOid, oid);
         orderMapper.delete(wrapper);
@@ -174,8 +172,25 @@ public class OrderServiceImpl implements IOrderService
     @Override
     public List<OrderVO> getOrderVOs(Integer uid, String username)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         List<OrderVO> orderVOS = orderVOMapper.getOrderVOs(uid);
+        if(ObjectUtils.isEmpty(orderVOS)) throw new ServiceException("订单数据不存在");
+        return orderVOS;
+    }
+
+    @Override
+    public List<OrderVO> getOrders(Integer uid, String username)
+    {
+        userService.judgeUser(uid, username);
+        MPJLambdaWrapper<Order> wrapper = new MPJLambdaWrapper<>();
+        wrapper.select(Order::getOid, Order::getAid, Order::getStatus, Order::getRecvName,
+                       Order::getTotalPrice, Order::getOrderTime, Order::getPayTime)
+               .select(Address::getZip, Address::getAddress, Address::getPhone,
+                       Address::getProvinceName, Address::getCityName, Address::getAreaName)
+               .leftJoin(Address.class, Address::getAid, Order::getAid)
+               .selectCollection(OrderItem.class, OrderVO::getOrderItems)
+               .leftJoin(OrderItem.class, OrderItem::getOid, Order::getOid);
+        List<OrderVO> orderVOS = orderMapper.selectJoinList(OrderVO.class, wrapper);
         if(ObjectUtils.isEmpty(orderVOS)) throw new ServiceException("订单数据不存在");
         return orderVOS;
     }
@@ -183,7 +198,7 @@ public class OrderServiceImpl implements IOrderService
     @Override
     public List<OrderVO> getOrderVOsByS(Integer uid, String username, List<Integer> status)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         MPJLambdaWrapper<Order> wrapper = new MPJLambdaWrapper<>();
         wrapper.select(Order::getOid, Order::getAid, Order::getStatus, Order::getRecvName,
                        Order::getTotalPrice, Order::getOrderTime, Order::getPayTime)
@@ -202,7 +217,7 @@ public class OrderServiceImpl implements IOrderService
     @Override
     public OrderVO getOrderVO(Integer uid, String username, Integer oid)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         OrderVO orderVO = orderVOMapper.getOrderVO(uid, oid);
         if(ObjectUtils.isEmpty(orderVO)) throw new ServiceException("订单数据不存在");
         return orderVO;
@@ -211,7 +226,7 @@ public class OrderServiceImpl implements IOrderService
     @Override
     public void setStatus(Integer uid, String username, Integer oid, Integer status)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         LambdaUpdateWrapper<Order> wrapper = new LambdaUpdateWrapper<>();
         wrapper.set(Order::getStatus, status)
                .eq(Order::getOid, oid)
@@ -223,7 +238,7 @@ public class OrderServiceImpl implements IOrderService
     @Override
     public OrderVO getOrderInfo(Integer uid, String username, Integer oid)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         Order order = orderMapper.selectOne(new LambdaQueryWrapper<Order>().eq(Order::getUid, uid).eq(Order::getOid, oid));
         if(ObjectUtils.isEmpty(order)) throw new OrderNotFoundException("没有该订单");
         OrderVO orderVO = getOrderVO(uid, username, oid);
@@ -242,8 +257,15 @@ public class OrderServiceImpl implements IOrderService
         return orderVO;
     }
 
+    @Override
+    public Integer getOCount(Integer uid, String username)
+    {
+        userService.judgeUser(uid, username);
+        return orderMapper.selectCount(null);
+    }
 
-//        @Override
+
+    //        @Override
 //    public OrderVO getOrderVO(Integer uid, String username, Integer oid)
 //    {
 //        userService.JudgeUser(uid, username);

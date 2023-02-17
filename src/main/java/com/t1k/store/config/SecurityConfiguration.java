@@ -53,8 +53,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
     {
         http
                 .authorizeRequests()
-                .antMatchers( "/api/auth/**", "/districts/**").permitAll()
+                .antMatchers("/**/admin/**").hasRole("admin")
+                .antMatchers("/api/auth/**", "/kaptcha/**").permitAll()
                 .antMatchers("/api/**").authenticated()
+                .antMatchers("/user/**", "/product/add_**").hasRole("user")
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()

@@ -125,7 +125,7 @@
 			let totalPrice = 0
 			function getOrderInfo(){
 				$.ajax({
-					url: "/order/get_orderInfo",
+					url: "/user/order/get_orderInfo",
 					type: "post",
 					data: {
 						"oid": oid
@@ -147,7 +147,7 @@
 
 			function pay(){
 				$.ajax({
-					url: "/alipay/create",
+					url: "/user/alipay/create",
 					type: "post",
 					data: {
 						"oid": oid,
@@ -165,31 +165,26 @@
 			}
 
 			$("#btn-cancel-order").click(function (){
-				let oid = $.getUrlParam("oid")
-				if(oid === null){
-					confirm("没有订单信息")
-				} else{
-					if(confirm("确定要取消该订单吗？")){
-						$.ajax({
-							url: "/order/receipt",
-							type: "post",
-							data: {
-								"oid": oid,
-								"status": 2
-							},
-							dataType: "json",
-							success: function (json){
-								if(json.state === 200){
-									location.href="cart.html"
-								} else{
-									confirm(json.state + ": " + json.message)
-								}
-							},
-							error: function (xhr){
-								error(xhr)
+				if(confirm("确定要取消该订单吗？")){
+					$.ajax({
+						url: "/user/order/receipt",
+						type: "post",
+						data: {
+							"oid": oid,
+							"status": 2
+						},
+						dataType: "json",
+						success: function (json){
+							if(json.state === 200){
+								location.href="cart.html"
+							} else{
+								confirm(json.state + ": " + json.message)
 							}
-						})
-					}
+						},
+						error: function (xhr){
+							error(xhr)
+						}
+					})
 				}
 			})
 

@@ -31,12 +31,6 @@
 				$(".middleBar").load("template/middleBar.html")
 				$("#accordion").load("template/container.html")
 			})
-			let defaultOption = '<option value="0">----- 请选择 -----</option>'
-			$(function () {
-				showProvinceList()
-				cityList.append(defaultOption)
-				areaList.append(defaultOption)
-			})
 		</script>
 	</head>
 
@@ -138,6 +132,14 @@
 			let cityList = $("#city-list")
 			let areaList = $("#area-list")
 
+			let defaultOption = '<option value="0">----- 请选择 -----</option>'
+
+			$(function () {
+				showProvinceList()
+				cityList.append(defaultOption)
+				areaList.append(defaultOption)
+			})
+
 			proList.change(function (){
 				showCityList()
 			})
@@ -150,8 +152,8 @@
 				proList.append(defaultOption)
 				let parent = 86
 				$.ajax({
-					url: "/districts",
-					type: "get",
+					url: "/user/districts",
+					type: "post",
 					data: {
 						"parent": parent
 					},
@@ -178,8 +180,8 @@
 					return ;
 				}
 				$.ajax({
-					url: "/districts",
-					type: "get",
+					url: "/user/districts",
+					type: "post",
 					data: {
 						"parent": parent
 					},
@@ -204,8 +206,8 @@
 					return ;
 				}
 				$.ajax({
-					url: "/districts",
-					type: "get",
+					url: "/user/districts",
+					type: "post",
 					data: {
 						"parent": parent
 					},
@@ -224,7 +226,7 @@
 
 			$("#btn-add-new-address").click(function (){
 				$.ajax({
-					url: "/address/add_address",
+					url: "/user/address/add_address",
 					type: "POST",
 					data: $("#form-add-new-address").serialize(),
 					dataType: "JSON",

@@ -36,7 +36,7 @@
 				$("#oid").html("11010003" + oid)
 				$("#totalPrice").html(totalPrice)
 				$.ajax({
-					url: "/order/receipt",
+					url: "/user/order/receipt",
 					type: "post",
 					data: {
 						"oid": oid,

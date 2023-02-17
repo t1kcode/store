@@ -11,7 +11,6 @@ import com.t1k.store.service.IProductService;
 import com.t1k.store.service.IUserService;
 import com.t1k.store.service.ex.InsertException;
 import com.t1k.store.service.ex.ProductNotFoundException;
-import com.t1k.store.service.ex.ServiceException;
 import com.t1k.store.service.ex.UpdateException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -68,7 +67,7 @@ public class CollectServiceImpl implements ICollectService
     @Override
     public List<Collect>getCollects(IPage<Collect> iPage, Integer uid, String username)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(Collect::getImage, Collect::getTitle, Collect::getPid, Collect::getPrice)
                .eq(Collect::getUid, uid)
@@ -81,7 +80,7 @@ public class CollectServiceImpl implements ICollectService
     @Override
     public void setStatus(Integer uid, String username, Integer pid, Integer status)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         Product product = productService.getProductById(pid);
         if(Objects.isNull(product)) throw new ProductNotFoundException("没有商品信息");
         LambdaUpdateWrapper<Collect> wrapper = new LambdaUpdateWrapper<>();
@@ -95,16 +94,14 @@ public class CollectServiceImpl implements ICollectService
     @Override
     public Integer getStatus(Integer uid, String username, Integer pid)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(Collect::getStatus)
                .eq(Collect::getUid, uid)
                .eq(Collect::getPid, pid);
         Collect collect = mapper.selectOne(wrapper);
-        Integer status;
-        if(Objects.isNull(collect)) {
-            status = 404;
-        } else{
+        Integer status = 404;
+        if(!Objects.isNull(collect)) {
             status = collect.getStatus();
         }
         return status;
@@ -113,7 +110,7 @@ public class CollectServiceImpl implements ICollectService
     @Override
     public Integer getCount(Integer uid, String username)
     {
-        userService.JudgeUser(uid, username);
+        userService.judgeUser(uid, username);
         LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Collect::getUid, uid)
                .eq(Collect::getStatus, 1);
